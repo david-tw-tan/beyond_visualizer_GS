@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Furniture Moodboard</title>
 
-<link rel="stylesheet" href="waterfall.css">
-<script defer src="waterfall.js"></script>
+<link rel="stylesheet" href="waterfall.css?v=collection-id-headers">
+<script defer src="waterfall.js?v=bookmark-detail-direct"></script>
 </head>
 
 <body>
@@ -109,38 +109,24 @@
 </div>
 
 <!-- ═══════════════════════════════════════
-     LIGHTBOX  (Layer 2 + Layer 3b)
+     LIGHTBOX  (overview scroll + detail view)
      ═══════════════════════════════════════ -->
 <div id="lightbox">
+    <button type="button" id="lightboxBackBtn" class="lightbox-back" style="display:none;" aria-label="Back">←</button>
+    <button type="button" id="lightboxCloseBtn" class="lightbox-close" style="display:none;" aria-label="Close">✕</button>
     <div class="lightbox-content">
-        <button type="button" id="lightboxCloseBtn" class="lightbox-close" style="display:none;" aria-label="Close">✕</button>
-        <div id="lightboxBackBtn" class="lightbox-back" style="display:none;">←</div>
-        <div class="lightbox-stage" id="lightboxStage">
-            <button type="button" id="lightboxPrev" class="lightbox-nav lightbox-nav-prev" aria-label="Previous photo" style="display:none;">‹</button>
-            <div class="lightbox-image-frame" id="lightboxImageWrap">
-                <img id="lightboxImg" alt="" draggable="false" />
-                <div id="starBtn">☆</div>
-                <div id="lightboxDots" class="lightbox-dots" aria-hidden="true"></div>
-            </div>
-            <button type="button" id="lightboxNext" class="lightbox-nav lightbox-nav-next" aria-label="Next photo" style="display:none;">›</button>
+        <div id="lightboxOverview" class="lightbox-overview" style="display:none;">
+            <div id="lightboxOverviewScroll" class="lightbox-overview-scroll"></div>
         </div>
-        <button id="lightboxCollectionBtn" class="lightbox-collection-btn" style="display:none;">
-            View collection
-        </button>
-    </div>
-</div>
 
-<!-- ═══════════════════════════════════════
-     COLLECTION GRID  (Layer 3)
-     ═══════════════════════════════════════ -->
-<div id="collectionView" class="collection-view" style="display:none;">
-    <div class="collection-view-content">
-        <div class="collection-view-header">
-            <button id="collectionBackBtn" class="collection-back">← Back</button>
-            <h2>Collection Items</h2>
+        <div id="lightboxDetail" class="lightbox-detail">
+            <div class="lightbox-stage" id="lightboxStage">
+                <div class="lightbox-image-frame" id="lightboxImageWrap">
+                    <img id="lightboxImg" alt="" draggable="false" />
+                    <div id="starBtn">☆</div>
+                </div>
+            </div>
         </div>
-        <p class="collection-count" id="collectionCount"></p>
-        <div id="collectionGrid" class="collection-grid"></div>
     </div>
 </div>
 

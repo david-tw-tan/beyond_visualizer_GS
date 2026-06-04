@@ -69,11 +69,8 @@ let exploreFilter = null;      // single style for explore mode
 let designFilters = new Set(); // multi-select styles for design mode
 
 let currentLightboxItem = null;
-let lightboxReturnView = null;   // null | 'collection' — where back button goes
-let lightboxLayer2Item = null;   // Layer 2 anchor when drilling into Layer 3
-let lightboxImageGroup = [];     // A/B/C… variants for current item
-let lightboxImageIndex = 0;
-let currentCollectionId = null;  // for Layer 3
+let lightboxMode = null;           // 'overview' | 'detail'
+let lightboxOverviewAnchor = null; // anchor when overview is active
 
 let priceFilters = new Set(['premium', 'luxury']); // design mode: both active by default
 let productSearch = '';                           // design mode: product type search
@@ -94,28 +91,21 @@ const emptyState   = document.getElementById('emptyState');
 const filterContainer = document.getElementById('filterContainer');
 const galleryTitle    = document.getElementById('galleryTitle');
 const lightbox     = document.getElementById('lightbox');
+const lightboxContent = document.querySelector('#lightbox .lightbox-content');
 const lightboxImg  = document.getElementById('lightboxImg');
 const starBtn      = document.getElementById('starBtn');
 const lightboxBackBtn = document.getElementById('lightboxBackBtn');
-const lightboxDots = document.getElementById('lightboxDots');
-const lightboxPrev = document.getElementById('lightboxPrev');
-const lightboxNext = document.getElementById('lightboxNext');
 const lightboxImageWrap = document.getElementById('lightboxImageWrap');
 const lightboxStage = document.getElementById('lightboxStage');
-const lightboxCollectionBtn = document.getElementById('lightboxCollectionBtn');
+const lightboxOverview = document.getElementById('lightboxOverview');
+const lightboxOverviewScroll = document.getElementById('lightboxOverviewScroll');
+const lightboxDetail = document.getElementById('lightboxDetail');
 const lightboxCloseBtn = document.getElementById('lightboxCloseBtn');
-const MAX_COLLECTION_GRID_ITEMS = 16;
-let collectionGridItemCount = 0;
 /** collection_ids that have at least one collection_item in the DB */
 let collectionIdsWithItems = new Set();
 
 let lightboxSource = 'gallery';       // 'gallery' | 'bookmark'
 let bookmarkLightboxWasStarred = false;
-
-const collectionView     = document.getElementById('collectionView');
-const collectionBackBtn  = document.getElementById('collectionBackBtn');
-const collectionCount    = document.getElementById('collectionCount');
-const collectionGrid     = document.getElementById('collectionGrid');
 const bookmarkBtn  = document.getElementById('bookmarkBtn');
 const bookmarkCount = document.getElementById('bookmarkCount');
 const bookmarkView = document.getElementById('bookmarkView');
@@ -895,7 +885,9 @@ function render() {
     gallery.style.removeProperty('display');
 
     const cards = mixed.map(item => createGalleryCard(item));
-    distributeMasonryCards(gallery, cards, getGalleryColumnCount());
+    const columnCount = getGalleryColumnCount();
+    distributeMasonryCards(gallery, cards, columnCount);
+    lastGalleryLayoutColumns = columnCount;
 }
 
 function getEmptyMessage() {
@@ -1013,6 +1005,9 @@ function getBookmarkColumnCount(container) {
 
 const GALLERY_COLUMN_STAGGER_MS = 90;
 let galleryStaggerGeneration = 0;
+/** Last masonry column count; resize re-renders only when this changes (avoids mobile URL-bar refresh) */
+let lastGalleryLayoutColumns = null;
+let lastBookmarkLayoutColumns = null;
 
 function randomGalleryColumnDelays(columnCount) {
     const slots = Array.from(
@@ -1176,130 +1171,217 @@ function getCollectionAnchorItem(item) {
 }
 
 /* ═══════════════════════════════════════════
-   LIGHTBOX  —  Layer 2 + Layer 3b
+   LIGHTBOX  —  overview scroll + detail view
    ═══════════════════════════════════════════ */
-function setLightboxImageIndex(index) {
-    if (!lightboxImageGroup.length) return;
-    lightboxImageIndex = Math.max(0, Math.min(index, lightboxImageGroup.length - 1));
-    const active = lightboxImageGroup[lightboxImageIndex];
-    currentLightboxItem = active;
-    lightboxImg.src = active.thumbnail_url;
-    lightboxImg.alt = active.filename_raw || 'Furniture';
-    updateLightboxStar();
-    renderLightboxDots();
-    updateLightboxNav();
+function needsLightboxOverview(item) {
+    const anchor = getCollectionAnchorItem(item);
+    if (getItemImageGroup(anchor).length > 1) return true;
+    if (
+        anchor.img_category === 'collection' &&
+        anchor.collection_id &&
+        collectionIdsWithItems.has(anchor.collection_id)
+    ) {
+        return getCollectionItems(anchor.collection_id).length > 0;
+    }
+    return getItemImageGroup(item).length > 1;
 }
 
-function updateLightboxNav() {
-    const multi = lightboxImageGroup.length > 1;
-    lightboxPrev.style.display = multi ? 'flex' : 'none';
-    lightboxNext.style.display = multi ? 'flex' : 'none';
-    lightboxPrev.disabled = lightboxImageIndex <= 0;
-    lightboxNext.disabled = lightboxImageIndex >= lightboxImageGroup.length - 1;
+function getOverviewItemLabel(item, index) {
+    if (item.img_product_type) {
+        return item.img_product_type.replace(/_/g, ' ');
+    }
+    return `Collection item ${index + 1}`;
 }
 
-function stepLightboxImage(delta) {
-    if (lightboxImageGroup.length <= 1) return;
-    setLightboxImageIndex(lightboxImageIndex + delta);
-}
+function buildLightboxOverviewSections(anchor) {
+    const root = getCollectionAnchorItem(anchor);
+    const sections = [];
+    const collItems =
+        root.img_category === 'collection' && root.collection_id
+            ? getCollectionItems(root.collection_id)
+            : [];
+    const rootVariants = getItemImageGroup(root);
+    const isCollection = root.img_category === 'collection';
 
-function renderLightboxDots() {
-    lightboxDots.innerHTML = '';
-    const multi = lightboxImageGroup.length > 1;
-    lightboxDots.classList.toggle('visible', multi);
-    lightboxDots.setAttribute('aria-hidden', multi ? 'false' : 'true');
+    if (isCollection || collItems.length > 0) {
+        if (rootVariants.length > 0) {
+            sections.push({
+                title: isCollection ? 'Collection' : 'Photos',
+                collectionId: isCollection && root.collection_id ? root.collection_id : null,
+                images: rootVariants
+            });
+        }
+    } else if (rootVariants.length > 1) {
+        sections.push({ title: 'Photos', images: rootVariants });
+    }
 
-    if (!multi) return;
-
-    lightboxImageGroup.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'lightbox-dot' + (i === lightboxImageIndex ? ' active' : '');
-        dot.setAttribute('aria-label', `Photo ${i + 1} of ${lightboxImageGroup.length}`);
-        dot.setAttribute('aria-current', i === lightboxImageIndex ? 'true' : 'false');
-        dot.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setLightboxImageIndex(i);
+    collItems.forEach((nested, i) => {
+        sections.push({
+            title: getOverviewItemLabel(nested, i),
+            images: getItemImageGroup(nested)
         });
-        lightboxDots.appendChild(dot);
+    });
+
+    return sections;
+}
+
+function renderLightboxOverview(anchor) {
+    lightboxOverviewScroll.innerHTML = '';
+    const sections = buildLightboxOverviewSections(anchor);
+
+    sections.forEach(section => {
+        const block = document.createElement('section');
+        block.className = 'lightbox-overview-section';
+
+        const heading = document.createElement('div');
+        heading.className = 'lightbox-overview-section-heading';
+
+        const title = document.createElement('h3');
+        title.className = 'lightbox-overview-section-title';
+        title.textContent = section.title;
+        heading.appendChild(title);
+
+        if (section.collectionId) {
+            const idLine = document.createElement('p');
+            idLine.className = 'lightbox-overview-section-id';
+            idLine.textContent = `(${section.collectionId})`;
+            heading.appendChild(idLine);
+        }
+
+        block.appendChild(heading);
+
+        const grid = document.createElement('div');
+        grid.className = 'lightbox-overview-grid';
+        if (section.images.length === 1) {
+            grid.classList.add('lightbox-overview-grid--single');
+        }
+        grid.setAttribute('role', 'list');
+
+        section.images.forEach(imgItem => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'lightbox-overview-cell';
+            btn.setAttribute('role', 'listitem');
+            btn.setAttribute('aria-label', imgItem.filename_raw || 'View photo');
+
+            const img = document.createElement('img');
+            img.src = imgItem.thumbnail_url;
+            img.alt = imgItem.filename_raw || 'Furniture';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+
+            btn.appendChild(img);
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openLightboxDetail(imgItem, {
+                    fromBookmark: lightboxSource === 'bookmark',
+                    returnToOverview: true
+                });
+            });
+
+            grid.appendChild(btn);
+        });
+
+        block.appendChild(grid);
+        lightboxOverviewScroll.appendChild(block);
     });
 }
 
-function updateLightboxCollectionBtn(item) {
-    const anchor = getCollectionAnchorItem(item);
-    const showCollection =
-        anchor.img_category === 'collection' &&
-        anchor.collection_id &&
-        lightboxReturnView !== 'collection';
+function applyLightboxOverviewLayout() {
+    const showOverview = lightboxMode === 'overview';
+    lightboxOverview.style.display = showOverview ? 'flex' : 'none';
+    lightboxDetail.style.display = showOverview ? 'none' : 'flex';
+    lightboxContent.classList.toggle('lightbox-content--overview', showOverview);
+    lightbox.classList.toggle('lightbox--overview', showOverview);
+    lightbox.classList.toggle('lightbox--detail', !showOverview && lightboxMode === 'detail');
+    starBtn.style.display = showOverview ? 'none' : 'block';
+}
 
-    if (!showCollection) {
-        lightboxCollectionBtn.style.display = 'none';
-        return;
+function openLightboxOverview(anchor, opts) {
+    lightboxMode = 'overview';
+    lightboxOverviewAnchor = getCollectionAnchorItem(anchor);
+    renderLightboxOverview(lightboxOverviewAnchor);
+    applyLightboxOverviewLayout();
+
+    if (opts.fromBookmark) {
+        lightbox.classList.add('lightbox-over-bookmarks');
+        lightboxCloseBtn.style.display = 'flex';
+    } else {
+        lightbox.classList.remove('lightbox-over-bookmarks');
+        lightboxCloseBtn.style.display = 'none';
     }
 
-    if (!collectionIdsWithItems.has(anchor.collection_id)) {
-        lightboxCollectionBtn.style.display = 'none';
-        return;
-    }
+    lightboxBackBtn.style.display = 'flex';
+    lightbox.style.display = 'flex';
+}
 
-    const collItems = getCollectionItems(anchor.collection_id);
-    if (collItems.length === 0) {
-        lightboxCollectionBtn.style.display = 'none';
-        return;
-    }
-
-    lightboxCollectionBtn.style.display = 'block';
-    lightboxCollectionBtn.textContent = `View collection (${collItems.length} item${collItems.length !== 1 ? 's' : ''})`;
-    lightboxCollectionBtn.onclick = (e) => {
-        e.stopPropagation();
-        openCollectionGrid(anchor.collection_id);
-    };
+function showLightboxDetailImage(item) {
+    if (!item) return;
+    currentLightboxItem = item;
+    lightboxImg.src = item.thumbnail_url;
+    lightboxImg.alt = item.filename_raw || 'Furniture';
+    updateLightboxStar();
 }
 
 function normalizeLightboxOptions(options) {
     if (options == null) {
-        return { returnView: null, fromBookmark: false };
+        return { fromBookmark: false, returnToOverview: false };
     }
     if (typeof options === 'string') {
-        return { returnView: options, fromBookmark: false };
+        return { fromBookmark: false, returnToOverview: options === 'overview' };
     }
     return {
-        returnView: options.returnView ?? null,
-        fromBookmark: options.fromBookmark ?? false
+        fromBookmark: options.fromBookmark ?? false,
+        returnToOverview: options.returnToOverview ?? false
     };
 }
 
-function openLightbox(item, options = {}) {
+function openLightboxDetail(item, options = {}) {
     const opts = normalizeLightboxOptions(options);
-    lightboxReturnView = opts.returnView;
+    lightboxMode = 'detail';
     lightboxSource = opts.fromBookmark ? 'bookmark' : 'gallery';
-    lightboxImageGroup = getItemImageGroup(item);
 
-    const startIndex = lightboxImageGroup.findIndex(x => x.thumbnail_url === item.thumbnail_url);
-    lightboxImageIndex = startIndex >= 0 ? startIndex : 0;
+    applyLightboxOverviewLayout();
+
+    const canReturnToOverview =
+        opts.returnToOverview &&
+        lightboxOverviewAnchor &&
+        needsLightboxOverview(lightboxOverviewAnchor);
 
     if (opts.fromBookmark) {
         bookmarkLightboxWasStarred = isBookmarked(item);
         lightbox.classList.add('lightbox-over-bookmarks');
         lightboxCloseBtn.style.display = 'flex';
-        lightboxBackBtn.style.display = 'none';
-        lightboxCollectionBtn.style.display = 'none';
+        lightboxBackBtn.style.display = canReturnToOverview ? 'flex' : 'none';
     } else {
         lightbox.classList.remove('lightbox-over-bookmarks');
         lightboxCloseBtn.style.display = 'none';
-        if (opts.returnView !== 'collection') {
-            lightboxLayer2Item = item;
-        }
-        lightboxBackBtn.style.display = opts.returnView === 'collection' ? 'flex' : 'none';
+        lightboxBackBtn.style.display = canReturnToOverview ? 'flex' : 'none';
     }
 
-    setLightboxImageIndex(lightboxImageIndex);
-    if (!opts.fromBookmark) {
-        updateLightboxCollectionBtn(item);
-    }
-
+    showLightboxDetailImage(item);
     lightbox.style.display = 'flex';
-    updateLightboxNav();
+}
+
+function openLightbox(item, options = {}) {
+    const opts = normalizeLightboxOptions(options);
+    lightboxSource = opts.fromBookmark ? 'bookmark' : 'gallery';
+
+    // Bookmark board: always hero thumbnail → enlarged detail (skip overview grid)
+    if (opts.fromBookmark) {
+        lightboxOverviewAnchor = null;
+        openLightboxDetail(toHeroItem(item), { ...opts, returnToOverview: false });
+        return;
+    }
+
+    if (needsLightboxOverview(item)) {
+        lightboxOverviewAnchor = getCollectionAnchorItem(item);
+        openLightboxOverview(item, opts);
+        return;
+    }
+
+    lightboxOverviewAnchor = null;
+    openLightboxDetail(item, opts);
 }
 
 function closeLightbox() {
@@ -1325,10 +1407,13 @@ function closeLightbox() {
 
     lightbox.style.display = 'none';
     currentLightboxItem = null;
-    lightboxReturnView = null;
+    lightboxMode = null;
+    lightboxOverviewAnchor = null;
     lightboxSource = 'gallery';
     lightbox.classList.remove('lightbox-over-bookmarks');
     lightboxCloseBtn.style.display = 'none';
+    lightboxBackBtn.style.display = 'none';
+    applyLightboxOverviewLayout();
 
     if (bookmarkView.style.display === 'block') {
         renderBookmarkView();
@@ -1336,71 +1421,16 @@ function closeLightbox() {
     render();
 }
 
-function initLightboxSwipe() {
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let tracking = false;
-    let pointerSwipe = false;
-
-    const onStart = (clientX, clientY) => {
-        touchStartX = clientX;
-        touchStartY = clientY;
-        tracking = true;
-    };
-
-    const onEnd = (clientX, clientY) => {
-        if (!tracking || lightbox.style.display !== 'flex' || lightboxImageGroup.length <= 1) {
-            tracking = false;
-            pointerSwipe = false;
-            return;
-        }
-        tracking = false;
-        pointerSwipe = false;
-
-        const dx = clientX - touchStartX;
-        const dy = clientY - touchStartY;
-        const minSwipe = 48;
-
-        if (Math.abs(dx) < minSwipe || Math.abs(dx) < Math.abs(dy) * 1.2) return;
-
-        if (dx < 0) stepLightboxImage(1);
-        else stepLightboxImage(-1);
-    };
-
-    lightboxImageWrap.addEventListener('touchstart', (e) => {
-        if (!e.touches.length) return;
-        onStart(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
-
-    lightboxImageWrap.addEventListener('touchend', (e) => {
-        if (!e.changedTouches.length) return;
-        onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-    }, { passive: true });
-
-    const isSwipeTarget = (el) =>
-        el && (el === lightboxImageWrap || lightboxImageWrap.contains(el));
-
-    lightboxStage.addEventListener('mousedown', (e) => {
-        if (e.button !== 0 || !isSwipeTarget(e.target)) return;
-        pointerSwipe = true;
-        onStart(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('mouseup', (e) => {
-        if (!pointerSwipe || e.button !== 0) return;
-        onEnd(e.clientX, e.clientY);
-    });
+function dismissLightbox() {
+    if (lightboxSource === 'bookmark') {
+        closeLightbox();
+        return;
+    }
+    lightbox.style.display = 'none';
+    currentLightboxItem = null;
+    lightboxMode = null;
+    lightboxOverviewAnchor = null;
 }
-
-lightboxPrev.addEventListener('click', (e) => {
-    e.stopPropagation();
-    stepLightboxImage(-1);
-});
-
-lightboxNext.addEventListener('click', (e) => {
-    e.stopPropagation();
-    stepLightboxImage(1);
-});
 
 function updateLightboxStar() {
     if (!currentLightboxItem) return;
@@ -1427,153 +1457,52 @@ lightboxCloseBtn.addEventListener('click', (e) => {
     closeLightbox();
 });
 
-// Back button: Layer 3b → Layer 3
 lightboxBackBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    lightbox.style.display = 'none';
-    lightboxReturnView = null;
-    // Re-open the collection grid
-    if (currentCollectionId) {
-        collectionView.style.display = 'block';
+    if (lightboxMode === 'overview') {
+        dismissLightbox();
+        return;
+    }
+    if (lightboxMode === 'detail' && lightboxOverviewAnchor) {
+        openLightboxOverview(lightboxOverviewAnchor, {
+            fromBookmark: lightboxSource === 'bookmark'
+        });
     }
 });
 
 lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) {
-        if (lightboxSource === 'bookmark') {
-            closeLightbox();
-        } else {
-            lightbox.style.display = 'none';
-            currentLightboxItem = null;
-            lightboxReturnView = null;
+        if (lightboxMode === 'detail' && lightboxOverviewAnchor) {
+            openLightboxOverview(lightboxOverviewAnchor, {
+                fromBookmark: lightboxSource === 'bookmark'
+            });
+            return;
         }
+        dismissLightbox();
     }
 });
 
-/* ═══════════════════════════════════════════
-   COLLECTION GRID  —  Layer 3 (dynamic layout)
-   ═══════════════════════════════════════════ */
-function getCollectionGridSpec(count) {
-    const n = Math.max(1, Math.min(count, MAX_COLLECTION_GRID_ITEMS));
-    const portrait = window.matchMedia('(orientation: portrait)').matches;
-
-    if (n === 1) return { cols: 1, rows: 1 };
-    if (n <= 4) return { cols: 2, rows: 2 };
-    if (n <= 6) return portrait ? { cols: 2, rows: 3 } : { cols: 3, rows: 2 };
-    if (n <= 9) return { cols: 3, rows: 3 };
-    return { cols: 4, rows: 4 };
-}
-
-function applyCollectionGridLayout(count) {
-    const spec = getCollectionGridSpec(count);
-    collectionGrid.style.gridTemplateColumns = `repeat(${spec.cols}, 1fr)`;
-    collectionGrid.style.gridTemplateRows = `repeat(${spec.rows}, 1fr)`;
-    collectionGrid.dataset.cols = String(spec.cols);
-    collectionGrid.dataset.rows = String(spec.rows);
-}
-
-function openCollectionGrid(collectionId) {
-    currentCollectionId = collectionId;
-    if (currentLightboxItem) {
-        lightboxLayer2Item = currentLightboxItem;
-    }
-    const allItems = getCollectionItems(collectionId);
-    const items = allItems.slice(0, MAX_COLLECTION_GRID_ITEMS);
-    collectionGridItemCount = items.length;
-
-    collectionGrid.innerHTML = '';
-    applyCollectionGridLayout(collectionGridItemCount);
-
-    let countText = `${items.length} item${items.length !== 1 ? 's' : ''} available. Tap to view.`;
-    if (allItems.length > MAX_COLLECTION_GRID_ITEMS) {
-        countText = `Showing ${MAX_COLLECTION_GRID_ITEMS} of ${allItems.length} items. Tap to view.`;
-    }
-    collectionCount.textContent = countText;
-
-    items.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'collection-grid-item';
-
-        const img = document.createElement('img');
-        img.src = item.thumbnail_url;
-        img.alt = item.filename_raw || 'Furniture';
-        img.loading = 'lazy';
-
-        const label = document.createElement('div');
-        label.className = 'grid-item-label';
-        label.textContent = item.img_product_type
-            ? item.img_product_type.replace(/_/g, ' ')
-            : item.filename_raw || '';
-
-        el.appendChild(img);
-        el.appendChild(label);
-
-        el.addEventListener('click', () => {
-            // Hide collection view, open item in lightbox (Layer 3b)
-            collectionView.style.display = 'none';
-            openLightbox(item, 'collection');
-        });
-
-        collectionGrid.appendChild(el);
-    });
-
-    // Hide lightbox, show collection grid
-    lightbox.style.display = 'none';
-    collectionView.style.display = 'block';
-}
-
-collectionBackBtn.addEventListener('click', () => {
-    collectionView.style.display = 'none';
-    currentCollectionId = null;
-    if (lightboxLayer2Item) {
-        openLightbox(lightboxLayer2Item, null);
-    }
-});
-
-// Escape key handler
 function handleEscape() {
     if (searchModal.style.display === 'flex') {
         closeSearchModal();
         return;
     }
-    if (collectionView.style.display === 'block') {
-        collectionView.style.display = 'none';
-        currentCollectionId = null;
-        if (lightboxLayer2Item) {
-            openLightbox(lightboxLayer2Item, null);
-        }
+    if (lightbox.style.display !== 'flex') {
+        bookmarkView.style.display = 'none';
         return;
     }
-    if (lightbox.style.display === 'flex') {
-        if (lightboxSource === 'bookmark') {
-            closeLightbox();
-            return;
-        }
-        if (lightboxReturnView === 'collection') {
-            lightbox.style.display = 'none';
-            lightboxReturnView = null;
-            if (currentCollectionId) {
-                collectionView.style.display = 'block';
-            }
-        } else {
-            lightbox.style.display = 'none';
-            currentLightboxItem = null;
-        }
+    if (lightboxMode === 'detail' && lightboxOverviewAnchor) {
+        openLightboxOverview(lightboxOverviewAnchor, {
+            fromBookmark: lightboxSource === 'bookmark'
+        });
         return;
     }
-    bookmarkView.style.display = 'none';
+    dismissLightbox();
 }
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         handleEscape();
-        return;
-    }
-    if (lightbox.style.display !== 'flex' || lightboxImageGroup.length <= 1) return;
-    if (e.key === 'ArrowRight') {
-        setLightboxImageIndex(lightboxImageIndex + 1);
-    } else if (e.key === 'ArrowLeft') {
-        setLightboxImageIndex(lightboxImageIndex - 1);
     }
 });
 
@@ -1928,6 +1857,9 @@ function renderBookmarkView() {
     });
 
     bookmarkView.appendChild(scroll);
+
+    const bookmarkWaterfall = bookmarkView.querySelector('.bookmark-waterfall');
+    lastBookmarkLayoutColumns = getBookmarkColumnCount(bookmarkWaterfall || bookmarkView);
 }
 
 function getBookmarkCardCaption(item, role) {
@@ -1983,16 +1915,7 @@ function createBookmarkCard(item, { starred, linked, role }) {
 
 function formatCollectionName(collId) {
     if (!collId) return 'Loose Items';
-    // Convert MF-FD_BEDROOM_COLLECTION_001 → Collection 001
-    const match = collId.match(/_(\d+)$/);
-    if (match) {
-        const num = match[1];
-        // Try to extract room from ID
-        const roomMatch = collId.match(/_(BEDROOM|LIVING|DINING|STUDY)_/i);
-        const room = roomMatch ? capitalize(roomMatch[1].toLowerCase()) : '';
-        return room ? `${room} Collection ${num}` : `Collection ${num}`;
-    }
-    return collId;
+    return `COLLECTION: ${collId}`;
 }
 
 // Close bookmark view on background click
@@ -2005,22 +1928,46 @@ bookmarkView.addEventListener('click', (e) => {
 /* ═══════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════ */
-initLightboxSwipe();
-
 let masonryResizeTimer = null;
-window.addEventListener('resize', () => {
-    if (collectionView.style.display === 'block' && collectionGridItemCount > 0) {
-        applyCollectionGridLayout(collectionGridItemCount);
+
+function refreshGalleryLayoutIfColumnsChanged() {
+    if (views.gallery.style.display === 'none' || !currentMode) {
+        lastGalleryLayoutColumns = null;
+        return;
     }
+    const cols = getGalleryColumnCount();
+    if (cols === lastGalleryLayoutColumns) return;
+    render();
+}
+
+function refreshBookmarkLayoutIfColumnsChanged() {
+    if (bookmarkView.style.display !== 'block') {
+        lastBookmarkLayoutColumns = null;
+        return;
+    }
+    const sample = bookmarkView.querySelector('.bookmark-waterfall');
+    const cols = getBookmarkColumnCount(sample || bookmarkView);
+    if (cols === lastBookmarkLayoutColumns) return;
+    renderBookmarkView();
+}
+
+function handleMasonryResize() {
+    // Mobile Safari/Chrome fire resize when the URL bar shows/hides on scroll.
+    // Only rebuild masonry when column breakpoints change, not on height-only resizes.
+    refreshGalleryLayoutIfColumnsChanged();
+    refreshBookmarkLayoutIfColumnsChanged();
+}
+
+window.addEventListener('resize', () => {
     clearTimeout(masonryResizeTimer);
-    masonryResizeTimer = setTimeout(() => {
-        if (views.gallery.style.display !== 'none' && currentMode) {
-            render();
-        }
-        if (bookmarkView.style.display === 'block') {
-            renderBookmarkView();
-        }
-    }, 200);
+    masonryResizeTimer = setTimeout(handleMasonryResize, 200);
 });
+
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        clearTimeout(masonryResizeTimer);
+        masonryResizeTimer = setTimeout(handleMasonryResize, 200);
+    });
+}
 
 loadData();

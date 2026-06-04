@@ -1,6 +1,6 @@
 # Furniture Moodboard — Architecture Notes
 
-Frontend-only MVP (`index.html`, `waterfall.js`, `waterfall.css`, `furniture_database.json`). Thumbnails load from GitHub Pages (`THUMBNAIL_BASE_URL` in `waterfall.js`). Bookmarks in `localStorage`. This doc captures behavior worth preserving for future work.
+Frontend-only MVP (`index.html`, `waterfall.js`, `waterfall.css`, `furniture_database.json`, `img_db_final/`). Thumbnails use relative `img_db_final/` paths (`THUMBNAIL_BASE_URL` in `waterfall.js`). Bookmarks in `localStorage`. This doc captures behavior worth preserving for future work.
 
 ---
 
@@ -77,25 +77,26 @@ Rationale: wide high-end sofas stay readable in most thumbs; occasional texture 
 
 ---
 
-## Three-layer navigation (gallery path)
+## Lightbox navigation (gallery path)
 
 ```
 Layer 1 — Waterfall grid
     click tile
-Layer 2 — Lightbox (item / collection hero)
-    A/B/C variants: dots, arrows, swipe
-    "View collection (N items)" if SET collection has collection_items
-    click View collection
-Layer 3 — Collection grid (up to 16 items, dynamic grid layout)
-    click piece
-Layer 3b — Lightbox (collection_item)
-    Back → Layer 3 grid
-    Escape / backdrop: context-dependent (see below)
+Overview (middle layer) — only if multiple variants and/or collection items
+    Single scrollable page; 1-column mobile, 2-column ≥640px
+    Section labels: "Collection", per-piece names, or "Photos"
+    All collection_item heroes + all A/B/C variants (no 16-item cap)
+    tap any image
+Detail (end layer) — single enlarged image + star (no variant carousel; pick photo in overview)
+    Back / Escape / backdrop (from detail) → overview when applicable
+    Otherwise close to waterfall
 ```
 
+**Skip overview:** Single image only (`needsLightboxOverview()` false) → open detail directly.
+
 - **Variants:** `getItemImageGroup()` — all rows sharing the same base filename (`*_A`, `*_B`, `*_C`…).
-- **Layer 2 anchor** stored in `lightboxLayer2Item` when drilling into a collection.
-- **Collection grid** does not use extreme-landscape thumb normalization (natural thumbs).
+- **Overview anchor** stored in `lightboxOverviewAnchor` for back navigation from detail.
+- **Overview cells** use `object-fit: contain` (full image, not gallery thumb crop).
 
 ---
 
@@ -111,13 +112,14 @@ Layer 3b — Lightbox (collection_item)
 
 **Bookmark lightbox (`openLightbox(..., { fromBookmark: true })`):**
 
+- **Skips overview** — card click opens **detail** only (hero enlarged + star).
+- Board thumbnails always use **`toHeroItem()`** (`*_A.jpg`); starring a variant in the gallery still stores the hero key (no duplicate rows for B/C).
 - Renders **on top of** bookmark view (`lightbox-over-bookmarks`, higher z-index) — bookmark page stays visible underneath.
-- **Close (✕)** instead of gallery back stack.
-- No “View collection” button from bookmark path (simpler single-level lightbox UX).
+- **Close (✕)** always available; **Back** appears on detail when opened from overview.
 - **Unstar on close:** If user opened a starred item and unstarred inside lightbox, confirm before removing from board on close.
 - **Cannot unstar a SET** while any nested `collection_item` from that set is still starred (`canUnstarBookmarkItem()`).
 
-**Gallery lightbox** uses backdrop/escape to dismiss or step back from Layer 3b → Layer 3; bookmark path uses `closeLightbox()` for a single overlay.
+**Gallery lightbox** uses backdrop/escape: overview → close; detail with overview anchor → back to overview; otherwise close. **Bookmark** uses `closeLightbox()` when dismissing from overview or detail without an overview parent.
 
 ---
 
@@ -129,7 +131,7 @@ Layer 3b — Lightbox (collection_item)
 | `loose_item` | Standalone hero |
 | `collection_item` | Piece inside a set; Layer 3 grid + 3b lightbox only |
 
-Images: `filename_raw` → `https://david-tw-tan.github.io/beyond_visualizer_GS/waterfall_thumbnails/{file}` (see `THUMBNAIL_BASE_URL`).
+Images: `filename_raw` → `img_db_final/{file}` (see `THUMBNAIL_BASE_URL`). Deploy `img_db_final/` with the HTML/JS/CSS if hosting on GitHub Pages.
 
 ---
 
@@ -184,6 +186,6 @@ Images: `filename_raw` → `https://david-tw-tan.github.io/beyond_visualizer_GS/
 |------|--------|
 | Feed mix / room bias / cycles | `waterfall.js` CONFIG + `buildExploreFeed`, `mixWeighted`, `buildTwoCycleBrowseFeed` |
 | Thumb crop / texture rate | `waterfall.js` CONFIG + `pickExtremeLandscapeDisplayRatio` |
-| Lightbox / layers | `openLightbox`, `openCollectionGrid`, `closeLightbox`, escape handler |
+| Lightbox | `openLightbox`, `openLightboxOverview`, `openLightboxDetail`, `closeLightbox`, `handleEscape` |
 | Bookmarks | `buildBookmarkGroups`, `toggleBookmark`, `renderBookmarkView` |
 | Masonry / card UI | `mountMasonryColumns`, `createGalleryCard`, `waterfall.css` |
