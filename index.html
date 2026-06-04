@@ -11,36 +11,170 @@
 
 <body>
 
-<header>
-    <h1>Furniture Moodboard</h1>
+<!-- ═══════════════════════════════════════
+     HOME VIEW
+     ═══════════════════════════════════════ -->
+<div id="homeView">
+    <div class="home-content">
+        <h1 class="home-title">Furniture Moodboard</h1>
+        <p class="home-subtitle">Discover your style. Design your space.</p>
 
-    <div id="bookmarkBtn">★ <span id="bookmarkCount">0</span></div>
-
-    <div class="filters">
-      <button class="filter-btn" data-cat="minimalist luxury">Minimalist Luxury</button>
-      <button class="filter-btn" data-cat="refined luxury">Refined Luxury</button>
-      <button class="filter-btn" data-cat="ultra luxury">Ultra Luxury</button>
-      <button class="filter-btn" data-cat="mid century luxury">Mid Century</button>
-      <button class="filter-btn" data-cat="playful luxury">Playful</button>
+        <div class="home-cards">
+            <div class="home-card" id="exploreCard">
+                <div class="home-card-visual">✨</div>
+                <h2>Explore Styles</h2>
+                <p>Browse curated furniture imagery to discover what resonates with you</p>
+            </div>
+            <div class="home-card" id="designCard">
+                <div class="home-card-visual">🛋️</div>
+                <h2>Design a Room</h2>
+                <p>Find the perfect pieces for your specific room and style</p>
+            </div>
+        </div>
     </div>
-</header>
-
-<div id="emptyState">
-    Choose your desired style to get started.
 </div>
 
-<div id="gallery"></div>
+<!-- ═══════════════════════════════════════
+     DESIGN ROOM — STEP 1: SELECT ROOM
+     ═══════════════════════════════════════ -->
+<div id="stepRoomView" class="step-view" style="display:none;">
+    <div class="step-content">
+        <button class="back-btn" id="backFromRoom">← Back</button>
+        <h2 class="step-title">Select a Room</h2>
+        <p class="step-subtitle">Which room are you designing?</p>
 
-<!-- LIGHTBOX -->
+        <div class="step-cards">
+            <div class="step-card" data-room="bedroom">
+                <div class="step-card-visual">🛏️</div>
+                <h3>Bedroom</h3>
+            </div>
+            <div class="step-card" data-room="living">
+                <div class="step-card-visual">🛋️</div>
+                <h3>Living Room</h3>
+            </div>
+            <div class="step-card" data-room="dining">
+                <div class="step-card-visual">🍽️</div>
+                <h3>Dining Room</h3>
+            </div>
+            <div class="step-card" data-room="study">
+                <div class="step-card-visual">📚</div>
+                <h3>Study Room</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DESIGN ROOM — STEP 2: SELECT STYLE
+     ═══════════════════════════════════════ -->
+<div id="stepStyleView" class="step-view" style="display:none;">
+    <div class="step-content">
+        <button class="back-btn" id="backFromStyle">← Back</button>
+        <h2 class="step-title">Select Styles</h2>
+        <p class="step-subtitle">Choose one or more styles for your <span id="selectedRoomLabel"></span></p>
+
+        <div class="style-toggles" id="styleToggles"></div>
+
+        <button type="button" class="show-results-btn" id="showResultsBtn" disabled>
+            Show Results <span class="show-results-arrow" aria-hidden="true">→</span>
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     GALLERY VIEW  (Explore + Design results)
+     ═══════════════════════════════════════ -->
+<div id="galleryView" style="display:none;">
+    <header>
+        <div id="homeBtn" title="Home">🏠</div>
+        <h1 id="galleryTitle">Furniture Moodboard</h1>
+        <div id="searchIcon" title="Search">🔍</div>
+        <div id="bookmarkBtn">★ <span id="bookmarkCount">0</span></div>
+
+        <!-- Style filters -->
+        <div id="filterContainer" class="filters"></div>
+
+        <!-- Price filters (design mode only) -->
+        <div id="priceFilterContainer" class="filters price-filters" style="display:none;"></div>
+
+        <!-- Active search tag (design mode only) -->
+        <div id="activeSearchRow" class="filters active-search-row" style="display:none;">
+            <span class="active-search-tag" id="activeSearchTag"></span>
+            <p id="activeSearchHint" class="active-search-hint" style="display:none;"></p>
+        </div>
+    </header>
+
+    <div id="emptyState">Choose a style to get started.</div>
+    <div id="gallery"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LIGHTBOX  (Layer 2 + Layer 3b)
+     ═══════════════════════════════════════ -->
 <div id="lightbox">
     <div class="lightbox-content">
-        <div id="starBtn">☆</div>
-        <img id="lightboxImg" />
+        <button type="button" id="lightboxCloseBtn" class="lightbox-close" style="display:none;" aria-label="Close">✕</button>
+        <div id="lightboxBackBtn" class="lightbox-back" style="display:none;">←</div>
+        <div class="lightbox-stage" id="lightboxStage">
+            <button type="button" id="lightboxPrev" class="lightbox-nav lightbox-nav-prev" aria-label="Previous photo" style="display:none;">‹</button>
+            <div class="lightbox-image-frame" id="lightboxImageWrap">
+                <img id="lightboxImg" alt="" draggable="false" />
+                <div id="starBtn">☆</div>
+                <div id="lightboxDots" class="lightbox-dots" aria-hidden="true"></div>
+            </div>
+            <button type="button" id="lightboxNext" class="lightbox-nav lightbox-nav-next" aria-label="Next photo" style="display:none;">›</button>
+        </div>
+        <button id="lightboxCollectionBtn" class="lightbox-collection-btn" style="display:none;">
+            View collection
+        </button>
     </div>
 </div>
 
-<!-- BOOKMARK PAGE -->
+<!-- ═══════════════════════════════════════
+     COLLECTION GRID  (Layer 3)
+     ═══════════════════════════════════════ -->
+<div id="collectionView" class="collection-view" style="display:none;">
+    <div class="collection-view-content">
+        <div class="collection-view-header">
+            <button id="collectionBackBtn" class="collection-back">← Back</button>
+            <h2>Collection Items</h2>
+        </div>
+        <p class="collection-count" id="collectionCount"></p>
+        <div id="collectionGrid" class="collection-grid"></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     BOOKMARK PAGE
+     ═══════════════════════════════════════ -->
 <div id="bookmarkView"></div>
+
+<!-- ═══════════════════════════════════════
+     LOADING SPINNER
+     ═══════════════════════════════════════ -->
+<div id="spinnerOverlay" class="spinner-overlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEARCH MODAL
+     ═══════════════════════════════════════ -->
+<div id="searchModal" class="search-modal" style="display:none;">
+    <div class="search-modal-backdrop"></div>
+    <div class="search-modal-content">
+        <button id="searchModalClose" class="search-modal-close">✕</button>
+        <div class="search-modal-box">
+            <input type="text" id="searchModalInput" placeholder="Search product type or category…" autocomplete="off" />
+            <button id="searchModalClear" class="search-clear" style="display:none;">✕</button>
+        </div>
+        <div id="searchModalSuggestions" class="search-suggestions"></div>
+        <p class="search-modal-hint">Try: chair, table, bed, collection, loose_item…</p>
+        <p id="searchModalRoomNote" class="search-modal-room-note" style="display:none;">
+            Keyword search looks across all rooms (room filter ignored). Style and price filters still apply.
+            Collection sets are not included — only loose items and collection pieces with a product type.
+        </p>
+    </div>
+</div>
 
 </body>
 </html>
