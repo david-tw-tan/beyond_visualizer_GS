@@ -133,44 +133,117 @@ body {
 
 #homeView .home-room-cards .step-card {
     box-sizing: border-box;
+    position: relative;
     aspect-ratio: 1 / 1;
     width: 100%;
     max-width: 100%;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 10px;
+    align-items: stretch;
+    justify-content: flex-end;
+    padding: 0;
+    overflow: hidden;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--color-hairline);
-    background: var(--color-surface-elevated);
+    border: 1px solid rgba(26, 26, 24, 0.14);
+    background: #1a1a18;
     box-shadow: var(--shadow-subtle);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+#homeView .home-room-cards .step-card-media {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1);
+    transition: transform var(--transition-smooth);
+}
+
+#homeView .home-room-cards .step-card--bedroom .step-card-media {
+    background-image: url('html_images/img_bedroom.jpg');
+    background-position: center 42%;
+}
+
+#homeView .home-room-cards .step-card--living .step-card-media {
+    background-image: url('html_images/img_living.jpg');
+    background-position: center 58%;
+}
+
+#homeView .home-room-cards .step-card--dining .step-card-media {
+    background-image: url('html_images/img_dining.jpg');
+    background-position: center 45%;
+}
+
+#homeView .home-room-cards .step-card--study .step-card-media {
+    background-image: url('html_images/img_study.jpg');
+    background-position: center 52%;
+}
+
+#homeView .home-room-cards .step-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(18, 16, 14, 0.78) 0%,
+        rgba(18, 16, 14, 0.42) 38%,
+        rgba(18, 16, 14, 0.08) 72%,
+        rgba(18, 16, 14, 0.18) 100%
+    );
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+#homeView .home-room-cards .step-card-label {
+    position: relative;
+    z-index: 1;
+    padding: 14px 10px 13px;
+    text-align: center;
 }
 
 #homeView .home-room-cards .step-card-visual {
     font-family: var(--font-display);
-    font-size: 2.1rem;
+    font-size: 2rem;
     font-weight: 400;
     font-style: italic;
-    color: var(--color-brass);
-    margin-bottom: 10px;
+    color: #e8d4b8;
+    margin-bottom: 6px;
     line-height: 1;
     letter-spacing: 0.02em;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
 }
 
 #homeView .home-room-cards .step-card h3 {
+    margin: 0;
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
-    color: var(--color-ink);
+    color: #fff;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
 }
 
 #homeView .home-room-cards .step-card:hover {
     transform: translateY(-3px);
-    border-color: var(--color-hairline-dark);
     box-shadow: var(--shadow-lift);
+}
+
+#homeView .home-room-cards .step-card:hover .step-card-media {
+    transform: scale(1.05);
+}
+
+#homeView .home-room-cards .step-card:hover::after {
+    opacity: 0.92;
+}
+
+#homeView .home-room-cards .step-card:focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 3px;
 }
 
 .home-explore-row {
