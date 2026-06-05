@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Beyond Showrooms</title>
 
-<link rel="stylesheet" href="waterfall.css?v=accessories-bg-scroll">
-<script defer src="waterfall.js?v=accessories-price-filter"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="waterfall.css?v=luxury-editorial-10">
+<script defer src="waterfall.js?v=luxury-editorial-1"></script>
 </head>
 
 <body>
@@ -19,23 +22,23 @@
         <h1 class="home-title">Beyond Showrooms</h1>
         <p class="home-subtitle">Take your home furnishings next level</p>
 
-        <h2 class="home-room-heading">Select a room, start styling!</h2>
+        <h2 class="home-room-heading">Select a room, start styling.</h2>
 
         <div class="step-cards home-room-cards">
             <div class="step-card" data-room="bedroom" role="button" tabindex="0">
-                <div class="step-card-visual">🛏️</div>
+                <div class="step-card-visual" aria-hidden="true">I</div>
                 <h3>Bedroom</h3>
             </div>
             <div class="step-card" data-room="living" role="button" tabindex="0">
-                <div class="step-card-visual">🛋️</div>
+                <div class="step-card-visual" aria-hidden="true">II</div>
                 <h3>Living Room</h3>
             </div>
             <div class="step-card" data-room="dining" role="button" tabindex="0">
-                <div class="step-card-visual">🍽️</div>
+                <div class="step-card-visual" aria-hidden="true">III</div>
                 <h3>Dining Room</h3>
             </div>
             <div class="step-card" data-room="study" role="button" tabindex="0">
-                <div class="step-card-visual">📚</div>
+                <div class="step-card-visual" aria-hidden="true">IV</div>
                 <h3>Study Room</h3>
             </div>
         </div>
@@ -51,7 +54,7 @@
      SELECT STYLE (step 2)
      ═══════════════════════════════════════ -->
 <div id="stepStyleView" class="step-view step-view--style" style="display:none;">
-    <button type="button" class="nav-back-btn step-nav-back" id="backFromStyle" aria-label="Back">‹</button>
+    <button type="button" class="nav-back-btn step-nav-back" id="backFromStyle" aria-label="Back"></button>
     <div class="step-content">
         <h2 class="step-title">What style?</h2>
         <p class="step-subtitle">Choose one or more styles for your <span id="selectedRoomLabel"></span></p>
@@ -71,9 +74,9 @@
     <header>
         <div class="gallery-header-top">
             <div class="gallery-header-toolbar">
-                <button type="button" id="homeBtn" class="nav-back-btn" aria-label="Back">‹</button>
+                <button type="button" id="homeBtn" class="nav-back-btn" aria-label="Back"></button>
                 <div class="gallery-header-actions">
-                    <button type="button" id="searchIcon" class="gallery-header-icon-btn" title="Search" aria-label="Search">🔍</button>
+                    <button type="button" id="searchIcon" class="gallery-header-icon-btn gallery-header-icon-btn--search" title="Search" aria-label="Search"></button>
                     <button type="button" id="bookmarkBtn" class="gallery-header-icon-btn gallery-header-bookmark" aria-label="Bookmarks"><span class="gallery-header-bookmark-star" aria-hidden="true">★</span><span id="bookmarkCount">0</span></button>
                 </div>
             </div>
@@ -88,7 +91,8 @@
 
         <p id="accessoriesEntryRow" class="accessories-entry-row" style="display:none;">
             <button type="button" id="accessoriesEntryBtn" class="accessories-entry-btn">
-                Add room accessories <span class="accessories-entry-arrow" aria-hidden="true">→</span>
+                <span class="accessories-entry-icon" aria-hidden="true"></span>
+                Add room accessories
             </button>
         </p>
 
@@ -136,7 +140,7 @@
 <div id="accessoriesView" class="accessories-view" style="display:none;" aria-hidden="true">
     <header class="accessories-header">
         <div class="accessories-toolbar">
-            <button type="button" id="accessoriesBackBtn" class="nav-back-btn" aria-label="Back to anchor pieces">‹</button>
+            <button type="button" id="accessoriesBackBtn" class="nav-back-btn" aria-label="Back to anchor pieces"></button>
         </div>
         <h1 id="accessoriesTitle" class="accessories-title">Room accessories</h1>
         <p id="accessoriesSubtitle" class="accessories-subtitle"></p>

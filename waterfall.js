@@ -1641,7 +1641,7 @@ function applyLightboxOverviewLayout() {
     lightboxContent.classList.toggle('lightbox-content--overview', showOverview);
     lightbox.classList.toggle('lightbox--overview', showOverview);
     lightbox.classList.toggle('lightbox--detail', !showOverview && lightboxMode === 'detail');
-    starBtn.style.display = showOverview ? 'none' : 'block';
+    starBtn.style.display = showOverview ? 'none' : 'flex';
 }
 
 /** Keep lightbox above bookmark board (2100) and accessories page (1500). */
@@ -1821,10 +1821,10 @@ function updateLightboxStar() {
     if (!currentLightboxItem) return;
     if (isBookmarked(currentLightboxItem)) {
         starBtn.textContent = '★';
-        starBtn.style.color = 'gold';
+        starBtn.style.color = '#c4a97a';
     } else {
         starBtn.textContent = '☆';
-        starBtn.style.color = 'white';
+        starBtn.style.color = 'rgba(255, 255, 255, 0.88)';
     }
 }
 
@@ -2332,6 +2332,7 @@ function createBookmarkCard(item, { starred, linked, role }) {
     const hero = toHeroItem(item);
     const el = document.createElement('div');
     el.className = 'bookmark-card';
+    if (role) el.dataset.role = role;
     if (linked) el.classList.add('bookmark-card--linked');
     if (starred) el.classList.add('bookmark-card--starred');
 
