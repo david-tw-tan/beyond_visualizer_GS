@@ -832,7 +832,8 @@ function getGalleryTitle() {
 }
 
 function getAccessoriesEntryLabel() {
-    return 'Find accessories for this room';
+    if (!selectedRoom) return 'Find accessories';
+    return `Find ${formatRoomLabel(selectedRoom)} accessories`;
 }
 
 function updateExploreStyleCaption() {
