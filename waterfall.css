@@ -273,13 +273,13 @@ body {
 }
 
 .home-explore-link {
-    margin: 0;
+    margin: 0 0 0 0.28em;
     padding: 0;
     border: none;
     background: none;
     font: inherit;
-    font-weight: 500;
-    color: var(--color-ink);
+    font-weight: 600;
+    color: var(--color-brass);
     cursor: pointer;
     text-decoration: underline;
     text-decoration-color: var(--color-brass-light);
@@ -289,7 +289,7 @@ body {
 }
 
 .home-explore-link:hover {
-    color: var(--color-brass);
+    color: #8a7048;
 }
 
 @media (min-width: 769px) {
