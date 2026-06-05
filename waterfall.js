@@ -170,6 +170,7 @@ const activeSearchRow    = document.getElementById('activeSearchRow');
 const activeSearchTag    = document.getElementById('activeSearchTag');
 const accessoriesEntryRow = document.getElementById('accessoriesEntryRow');
 const accessoriesEntryBtn = document.getElementById('accessoriesEntryBtn');
+const galleryStepHint = document.getElementById('galleryStepHint');
 const accessoriesView    = document.getElementById('accessoriesView');
 const accessoriesBackBtn = document.getElementById('accessoriesBackBtn');
 const accessoriesTitle   = document.getElementById('accessoriesTitle');
@@ -830,6 +831,10 @@ function getGalleryTitle() {
     return 'Beyond Showrooms';
 }
 
+function getAccessoriesEntryLabel() {
+    return 'Find accessories for this room';
+}
+
 function updateExploreStyleCaption() {
     const el = document.getElementById('exploreStyleCaption');
     if (!el) return;
@@ -859,9 +864,22 @@ function updateGalleryHeader() {
 
     updateExploreStyleCaption();
 
+    const showDesignFlow =
+        currentMode === 'design' && selectedRoom && !productSearch;
+
+    if (galleryStepHint) {
+        galleryStepHint.style.display = showDesignFlow ? 'block' : 'none';
+    }
+
     if (accessoriesEntryRow) {
-        accessoriesEntryRow.style.display =
-            currentMode === 'design' && selectedRoom && !productSearch ? 'block' : 'none';
+        accessoriesEntryRow.style.display = showDesignFlow ? 'block' : 'none';
+    }
+
+    if (accessoriesEntryBtn) {
+        const labelEl = accessoriesEntryBtn.querySelector('.accessories-entry-label');
+        if (labelEl && selectedRoom) {
+            labelEl.textContent = getAccessoriesEntryLabel();
+        }
     }
 }
 
