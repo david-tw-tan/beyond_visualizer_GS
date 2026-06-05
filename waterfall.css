@@ -536,6 +536,12 @@ header {
     background: var(--color-surface-elevated);
 }
 
+/* Design mode: accessories band bottom line replaces header divider */
+#galleryView.gallery-view--design header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
 .gallery-header-top {
     width: 100%;
     max-width: 100%;
@@ -762,10 +768,22 @@ header {
     font-size: 0.78rem;
 }
 
+/* Framed band — draws attention without pill-button confusion */
 .accessories-entry-row {
-    margin: 0;
-    padding: 16px 16px 8px;
+    margin: 18px auto 0;
+    padding: 9px 20px;
+    max-width: min(380px, 94vw);
     text-align: center;
+    border-top: 1px solid var(--color-hairline);
+    border-bottom: 1px solid var(--color-hairline);
+}
+
+@media (max-width: 768px) {
+    .accessories-entry-row {
+        margin-top: 14px;
+        padding: 7px 16px;
+        max-width: min(340px, 96vw);
+    }
 }
 
 /* Text link — not a pill; pills are for filters only */
