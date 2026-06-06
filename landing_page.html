@@ -8,9 +8,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing_page.css?v=footer-wildchina-2">
-    <script defer src="landing_page.js?v=copy-v3"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing_page.css?v=showroom-modal-22">
+    <script defer src="landing_page.js?v=showroom-modal-21"></script>
 </head>
 <body>
 
@@ -35,13 +35,13 @@
             <span class="lp-hero__watermark" aria-hidden="true">BS</span>
             <div class="lp-hero__content lp-reveal">
                 <h1 id="hero-title" class="lp-hero__title">Create the Designer Home<br>You've Always Wanted</h1>
-                <p class="lp-hero__hook">It's simple and more affordable than you expect</p>
-                <p class="lp-hero__pillars">Design Planning + Factory Direct</p>
+                <p class="lp-hero__hook">Designer-quality furnishing, sourced direct from premium manufacturers.</p>
                 <div class="lp-btn-row">
                     <button type="button" class="lp-btn lp-btn--primary" data-open-contact>Book a Free Call</button>
                 </div>
                 <p class="lp-hero__trust">
                     Trusted by homeowners furnishing luxury homes, villas, and full-home renovations.
+                    <span class="lp-hero__trust-note">Work with us virtually or visit our factories in person.</span>
                 </p>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <div class="lp-intro-copy">
                     <h2 class="lp-section-title">A Smarter Way to Furnish</h2>
                     <p class="lp-lead">
-                        Beyond Showrooms is an international concierge for designer-quality home furnishing. Through our factory partnerships, we give you access to a wider range of styles than traditional retail — without the luxury markup.
+                        Beyond Showrooms is an international concierge for designer-quality home furnishing. Through our factory partnerships, we help homeowners get more out of their furnishing budget — while also accessing a wider range of styles than traditional retail.
                     </p>
                     <p class="lp-lead">
                         Our designers help you find a style you'll love and create a bespoke plan for your home and budget.
@@ -62,7 +62,7 @@
                     <p class="lp-lead">
                         We curate selected pieces from premium manufacturers in Foshan, China's furniture capital — trusted partner factories with decades of experience producing high-end designer furniture.
                     </p>
-                    <a id="styleToolLink" href="index.html" class="lp-tool-link">
+                    <a id="styleToolLink" href="#" class="lp-tool-link" data-open-showroom>
                         Explore showroom pieces
                         <span class="lp-tool-link__chevron" aria-hidden="true"></span>
                     </a>
@@ -85,13 +85,13 @@
                 <article class="lp-step lp-reveal">
                     <span class="lp-step__num" aria-hidden="true">1</span>
                     <h3 class="lp-step__title">Free Discovery Call</h3>
-                    <p class="lp-step__body">Tell us about your home, goals, and budget.</p>
+                    <p class="lp-step__body">Tell us about your home, goals, and budget. See if we're the right fit for you.</p>
                 </article>
                 <article class="lp-step lp-reveal">
                     <span class="lp-step__num" aria-hidden="true">2</span>
                     <h3 class="lp-step__title">Design Consultation</h3>
                     <p class="lp-step__body">
-                        Receive a bespoke styling plan. Starting from $75. No obligation to buy.
+                        Receive a bespoke styling plan. $250 styling fee. No obligation to buy.
                     </p>
                 </article>
                 <article class="lp-step lp-reveal">
@@ -99,7 +99,7 @@
                     <h3 class="lp-step__title">Procurement &amp; Delivery</h3>
                     <p class="lp-step__body">
                         Like the plan? We'll take care of the rest. Finalize your selections virtually or in person, and we'll manage everything from factory coordination and quality control to international delivery.
-                        <span class="lp-step__assurance">1-year warranty included on all orders.</span>
+                        <span class="lp-step__assurance">1-year warranty and lifetime care on all orders.</span>
                     </p>
                 </article>
             </div>
@@ -115,8 +115,8 @@
             <ul class="lp-benefits lp-reveal">
                 <li><span class="lp-benefit-check" aria-hidden="true"></span>Designer-quality furniture made accessible</li>
                 <li><span class="lp-benefit-check" aria-hidden="true"></span>Hundreds of styles and finishes</li>
-                <li><span class="lp-benefit-check" aria-hidden="true"></span>Full customization across all items</li>
-                <li><span class="lp-benefit-check" aria-hidden="true"></span>One dedicated team from concept to delivery</li>
+                <li><span class="lp-benefit-check" aria-hidden="true"></span>Built-to-order pieces tailored to your specifications</li>
+                <li><span class="lp-benefit-check" aria-hidden="true"></span>We handle everything from planning to delivery</li>
                 <li><span class="lp-benefit-check" aria-hidden="true"></span>Trusted network behind thousands of completed home projects</li>
             </ul>
         </div>
@@ -129,7 +129,7 @@
                 <div class="lp-intro-copy">
                     <h2 class="lp-section-title">Not Sure Which Style Fits Your Home?</h2>
                     <p class="lp-lead">
-                        Whether you're drawn to minimalist luxury, ultra luxury, mid-century, or something more playful, our designers will help you find what fits your home.
+                        Whether you're drawn to minimalism, statement luxury, mid-century, or something more playful, our designers will help you find what fits your home.
                     </p>
                 </div>
                 <div class="lp-style-visual" aria-hidden="true">
@@ -181,6 +181,35 @@
     </div>
 </footer>
 
+<!-- Showroom preview modal -->
+<div id="showroomModal" class="lp-modal lp-modal--showroom" hidden>
+    <div class="lp-modal__backdrop" data-close-showroom></div>
+    <div
+        class="lp-modal__panel lp-modal__panel--showroom"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="showroomModalTitle"
+    >
+        <button type="button" class="lp-modal__close" data-close-showroom aria-label="Close">&times;</button>
+        <header class="lp-showroom-header">
+            <h2 id="showroomModalTitle" class="lp-showroom-title">Inside Our Showrooms</h2>
+            <p class="lp-showroom-subtitle">
+                Every image captured in actual factory showrooms.
+            </p>
+        </header>
+        <div class="lp-showroom-scroll" id="showroomScroll">
+            <div class="lp-showroom-gallery" id="showroomGallery" aria-live="polite">
+                <p class="lp-showroom-loading">Curating sample pieces…</p>
+            </div>
+            <div class="lp-showroom-cta">
+                <p class="lp-showroom-cta__kicker">All pieces above available now for your home.</p>
+                <h3 class="lp-showroom-cta__title">Ready to explore more?</h3>
+                <button type="button" class="lp-btn lp-btn--primary" data-showroom-book>Book a Free Call</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Contact options modal -->
 <div id="contactModal" class="lp-modal" hidden>
     <div class="lp-modal__backdrop" data-close-contact></div>
@@ -190,17 +219,17 @@
         <h2 id="contactModalTitle" class="lp-modal__title">How would you like to connect?</h2>
         <p class="lp-modal__lead">Choose the option that works best for you. Every conversation starts with a free, no-obligation discovery call.</p>
         <div class="lp-contact-options">
-            <a href="#" class="lp-contact-option" data-contact="discovery">
-                <span class="lp-contact-option__label">Schedule a discovery call</span>
-                <span class="lp-contact-option__hint">Book a time that suits you</span>
-            </a>
             <a href="#" class="lp-contact-option" data-contact="whatsapp">
-                <span class="lp-contact-option__label">Message us on WhatsApp</span>
+                <span class="lp-contact-option__label">WhatsApp Us</span>
                 <span class="lp-contact-option__hint">Quick questions welcome</span>
             </a>
             <a href="#" class="lp-contact-option" data-contact="email">
-                <span class="lp-contact-option__label">Send us an email</span>
+                <span class="lp-contact-option__label">Send Us an Email</span>
                 <span class="lp-contact-option__hint">hello@beyondshowrooms.com</span>
+            </a>
+            <a href="#" class="lp-contact-option" data-contact="discovery">
+                <span class="lp-contact-option__label">Request a Discovery Call</span>
+                <span class="lp-contact-option__hint">We'll arrange a suitable time to speak</span>
             </a>
         </div>
     </div>
