@@ -47,10 +47,15 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
 }
 
 body {
     margin: 0;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    width: 100%;
     font-family: var(--font-body);
     font-weight: 400;
     font-size: 1rem;
@@ -59,6 +64,7 @@ body {
     background: var(--color-surface);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    touch-action: pan-y pinch-zoom;
 }
 
 img {

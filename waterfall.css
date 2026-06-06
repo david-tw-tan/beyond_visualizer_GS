@@ -42,16 +42,24 @@
 /* ═══════════════════════════════════════════
    BASE
    ═══════════════════════════════════════════ */
+html {
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+}
+
 body {
     margin: 0;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    width: 100%;
     font-family: var(--font-body);
     font-weight: 400;
     background: var(--color-surface);
     color: var(--color-ink);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
     line-height: 1.55;
+    touch-action: pan-y pinch-zoom;
 }
 
 /* Design gallery: warm editorial canvas */
