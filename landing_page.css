@@ -751,6 +751,63 @@ a {
     }
 }
 
+/* ─── Field journal ─── */
+.lp-field .lp-intro-grid {
+    align-items: center;
+    gap: 2.75rem;
+}
+
+.lp-field__copy {
+    text-align: left;
+}
+
+.lp-field__status {
+    margin: 1.5rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--color-brass);
+}
+
+@media (min-width: 768px) {
+    .lp-field__status {
+        font-size: 0.9rem;
+    }
+}
+
+.lp-field__visual {
+    margin: 0;
+    padding-inline: clamp(1.35rem, 7vw, 3.25rem);
+    box-sizing: border-box;
+}
+
+.lp-field__img {
+    display: block;
+    width: 100%;
+    max-width: 40rem;
+    margin-inline: auto;
+    aspect-ratio: 750 / 369;
+    object-fit: cover;
+    object-position: center 52%;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lift);
+}
+
+@media (min-width: 900px) {
+    .lp-field .lp-intro-grid {
+        gap: 3rem;
+    }
+
+    .lp-field__visual {
+        padding-inline: 1.5rem 0;
+    }
+
+    .lp-field__img {
+        max-width: none;
+    }
+}
+
 /* ─── Final CTA ─── */
 .lp-final-cta {
     text-align: center;
