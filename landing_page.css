@@ -105,6 +105,11 @@ a {
     color: var(--color-ink-muted);
 }
 
+.lp-lead__emphasis {
+    font-weight: 500;
+    color: var(--color-ink);
+}
+
 .lp-container {
     width: min(var(--content-max), calc(100% - 2.5rem));
     margin-inline: auto;
