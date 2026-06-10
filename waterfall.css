@@ -881,71 +881,60 @@ header {
     font-size: 0.78rem;
 }
 
-/* Framed band — draws attention without pill-button confusion */
-.accessories-entry-row {
+/* Design mode browse tabs — Collections | [Room] accessories */
+.design-browse-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: clamp(20px, 8vw, 40px);
     margin: 12px auto 0;
-    padding: 8px 20px;
-    max-width: min(380px, 94vw);
-    text-align: center;
-    border-top: 1px solid var(--color-hairline);
+    padding: 0 20px;
+    max-width: min(520px, 100%);
     border-bottom: 1px solid var(--color-hairline);
 }
 
-@media (max-width: 768px) {
-    .accessories-entry-row {
-        margin-top: 14px;
-        padding: 7px 16px;
-        max-width: min(340px, 96vw);
-    }
-}
-
-/* Text link + chevron — not a pill; pills are for filters only */
-.accessories-entry-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 0;
+.design-browse-tab {
+    flex: 0 1 auto;
+    margin: 0;
+    padding: 8px 2px 12px;
     border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
     background: none;
     font-family: var(--font-body);
     font-size: 0.86rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: none;
-    color: var(--color-ink);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-muted);
     cursor: pointer;
-    text-decoration: none;
-    transition: color var(--transition-fast);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.accessories-entry-btn:hover {
-    color: var(--color-brass);
+.design-browse-tab:hover {
+    color: var(--color-ink);
 }
 
-.accessories-entry-arrow {
-    flex-shrink: 0;
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-top: 1px;
-    border-right: 3px solid currentColor;
-    border-bottom: 3px solid currentColor;
-    transform: rotate(-45deg);
-    color: var(--color-brass);
-    transition: transform var(--transition-fast), color var(--transition-fast);
+.design-browse-tab--active {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-brass);
 }
 
-.accessories-entry-btn:hover .accessories-entry-arrow {
-    transform: rotate(-45deg) translate(3px, -3px);
-    color: var(--color-brass-light);
+@media (max-width: 768px) {
+    .design-browse-tabs {
+        margin-top: 14px;
+        padding: 0 16px;
+        gap: 18px;
+    }
+
+    .design-browse-tab {
+        font-size: 0.8rem;
+        padding-bottom: 11px;
+    }
 }
 
-
-#galleryView.gallery-view--accessories-behind {
-    transform: translateX(-14%);
-    opacity: 0.4;
-    transition: transform 0.32s ease, opacity 0.32s ease;
-    pointer-events: none;
+#galleryView.gallery-view--accessories-tab #gallery,
+#galleryView.gallery-view--accessories-tab #emptyState {
+    display: none !important;
 }
 
 .explore-style-caption {
@@ -1113,6 +1102,7 @@ header .active-search-row {
 }
 
 #gallery.masonry-layout,
+.gallery-collection-group__masonry.masonry-layout,
 .bookmark-waterfall.masonry-layout {
     display: flex !important; /* beats any legacy inline display:block on #gallery */
     flex-direction: row;
@@ -1120,6 +1110,31 @@ header .active-search-row {
     gap: 12px;
     width: 100%;
     max-width: 100%;
+}
+
+#gallery.gallery-collections-grouped {
+    display: block !important;
+}
+
+.gallery-collection-group {
+    margin-bottom: 2rem;
+}
+
+.gallery-collection-group:last-child {
+    margin-bottom: 0;
+}
+
+.gallery-collection-group__title {
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 3.2vw, 1.35rem);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+}
+
+.gallery-collection-group + .gallery-collection-group .gallery-collection-group__title {
+    margin-top: 0.35rem;
 }
 
 .masonry-column {
@@ -1132,7 +1147,8 @@ header .active-search-row {
 }
 
 /* Gallery refresh: columns rise in — delay order randomized in JS each render */
-#gallery.masonry-layout .masonry-column {
+#gallery.masonry-layout .masonry-column,
+.gallery-collection-group__masonry.masonry-layout .masonry-column {
     opacity: 0;
     transform: translateY(32px);
     transition:
@@ -1140,13 +1156,15 @@ header .active-search-row {
         transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-#gallery.masonry-layout .masonry-column.masonry-column-show {
+#gallery.masonry-layout .masonry-column.masonry-column-show,
+.gallery-collection-group__masonry.masonry-layout .masonry-column.masonry-column-show {
     opacity: 1;
     transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #gallery.masonry-layout .masonry-column {
+    #gallery.masonry-layout .masonry-column,
+    .gallery-collection-group__masonry.masonry-layout .masonry-column {
         transition: none;
         opacity: 1;
         transform: none;
@@ -1711,6 +1729,19 @@ header .active-search-row {
     overflow: hidden;
 }
 
+.lightbox-detail-title {
+    flex-shrink: 0;
+    margin: 0 0 12px;
+    padding: 0 12px;
+    font-family: var(--font-display);
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: center;
+    line-height: 1.3;
+}
+
 .lightbox-stage {
     display: flex;
     align-items: center;
@@ -1744,6 +1775,29 @@ header .active-search-row {
 
 #lightbox.lightbox--detail .lightbox-image-frame img {
     max-height: min(92vh, calc(100dvh - 40px));
+}
+
+/* Wide laptops / external monitors — MacBook-sized viewports already fill ~98vw */
+@media (min-width: 1400px) {
+    #lightbox.lightbox--detail .lightbox-content {
+        width: min(92vw, 1500px);
+    }
+
+    #lightbox.lightbox--detail .lightbox-image-frame img {
+        max-height: min(94vh, calc(100dvh - 32px));
+    }
+}
+
+@media (min-width: 1680px) {
+    #lightbox.lightbox--detail .lightbox-content {
+        width: min(90vw, 1680px);
+    }
+}
+
+@media (min-width: 1920px) {
+    #lightbox.lightbox--detail .lightbox-content {
+        width: min(88vw, 1840px);
+    }
 }
 
 #starBtn {
@@ -2236,163 +2290,8 @@ header .active-search-row {
 }
 
 /* ═══════════════════════════════════════════
-   ACCESSORIES VIEW  (design — browse only)
+   ACCESSORIES TAB  (design — inline browse panel)
    ═══════════════════════════════════════════ */
-.accessories-view {
-    --accessories-tint-top: 12.75rem;
-    position: fixed;
-    inset: 0;
-    z-index: 1500;
-    background: var(--color-surface);
-    overflow-y: auto;
-    transform: translateX(100%);
-    transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-    visibility: hidden;
-}
-
-/*
- * “New room” backdrop (CSS-only):
- * ::before = tinted gradient (scales in)
- * ::after  = white veil that fades out on enter / back on exit
- */
-.accessories-view::before,
-.accessories-view::after {
-    content: '';
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: 0;
-    pointer-events: none;
-}
-
-.accessories-view::before {
-    top: var(--accessories-tint-top);
-    bottom: 0;
-    background: linear-gradient(
-        168deg,
-        #f5f0e8 0%,
-        #efe9df 42%,
-        #e8e2d8 100%
-    );
-    background-size: 200% 200%;
-    background-position: 12% 22%;
-    transform: scale(1.08);
-    transform-origin: 50% 0%;
-    opacity: 1;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 36px);
-    mask-image: linear-gradient(180deg, transparent 0, #000 36px);
-    transition:
-        transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-        background-position 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.accessories-view::after {
-    top: 0;
-    bottom: 0;
-    background: var(--color-surface-elevated);
-    opacity: 1;
-    transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.accessories-view.accessories-view--open::before {
-    transform: scale(1);
-    background-position: 88% 82%;
-}
-
-.accessories-view.accessories-view--open::after {
-    opacity: 0;
-}
-
-.accessories-view.accessories-view--open {
-    transform: translateX(0);
-    visibility: visible;
-}
-
-.accessories-view > * {
-    position: relative;
-    z-index: 1;
-}
-
-.accessories-header {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    padding: max(14px, env(safe-area-inset-top, 0px)) 20px 18px;
-    background: linear-gradient(
-        180deg,
-        var(--color-surface-elevated) 0%,
-        var(--color-surface-elevated) 82%,
-        rgba(255, 255, 255, 0) 100%
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--color-hairline);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .accessories-view::before {
-        transform: none;
-        background-size: 100% 100%;
-        background-position: 50% 50%;
-        transition: none;
-    }
-
-    .accessories-view::after {
-        transition: opacity 0.2s ease;
-    }
-}
-
-.accessories-toolbar {
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-    margin-bottom: 8px;
-}
-
-.accessories-title {
-    margin: 0;
-    padding: 6px 8px 8px;
-    font-family: var(--font-display);
-    font-size: clamp(1.45rem, 5.8vw, 2rem);
-    font-weight: 500;
-    text-align: center;
-    letter-spacing: 0.01em;
-    color: var(--color-ink);
-}
-
-.accessories-subtitle {
-    margin: 0;
-    padding: 0 12px 10px;
-    text-align: center;
-    font-size: 0.88rem;
-    font-weight: 300;
-    color: var(--color-ink-muted);
-    letter-spacing: var(--tracking-wide);
-}
-
-.accessories-price-filters {
-    margin-top: 2px;
-    margin-bottom: 6px;
-}
-
-.accessories-price-filters .filter-btn {
-    padding: 5px 12px;
-    font-size: 0.78rem;
-}
-
-.accessories-disclaimer {
-    margin: 0;
-    padding: 0 16px 12px;
-    text-align: center;
-    font-size: 0.72rem;
-    line-height: 1.5;
-    color: var(--color-ink-faint);
-    max-width: 28rem;
-    margin-left: auto;
-    margin-right: auto;
-    letter-spacing: 0.02em;
-}
-
 .accessories-empty {
     text-align: center;
     font-family: var(--font-display);
@@ -2410,7 +2309,8 @@ header .active-search-row {
     width: 100%;
     max-width: 1600px;
     margin: 0 auto;
-    padding: 8px 16px 48px;
+    padding: 20px 18px 32px;
+    background: var(--color-surface-elevated);
 }
 
 .accessories-gallery.masonry-layout {

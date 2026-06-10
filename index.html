@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="waterfall.css?v=overscroll-fix">
-<script defer src="waterfall.js?v=find-room-accessories"></script>
+<link rel="stylesheet" href="waterfall.css?v=brand-badge-revert-1">
+<script defer src="waterfall.js?v=brand-badge-revert-1"></script>
 </head>
 
 <body>
@@ -102,12 +102,10 @@
 
         <div id="priceFilterContainer" class="filters price-filters gallery-header-price-filters" style="display:none;"></div>
 
-        <p id="accessoriesEntryRow" class="accessories-entry-row" style="display:none;">
-            <button type="button" id="accessoriesEntryBtn" class="accessories-entry-btn">
-                <span class="accessories-entry-label">Find living room accessories</span>
-                <span class="accessories-entry-arrow" aria-hidden="true"></span>
-            </button>
-        </p>
+        <nav id="designBrowseTabs" class="design-browse-tabs" role="tablist" style="display:none;" aria-label="Browse by type">
+            <button type="button" id="designTabCollections" class="design-browse-tab design-browse-tab--active" role="tab" aria-selected="true" aria-controls="gallery">Collections</button>
+            <button type="button" id="designTabAccessories" class="design-browse-tab" role="tab" aria-selected="false" aria-controls="accessoriesGallery">Living room accessories</button>
+        </nav>
 
         <!-- Active search tag (design mode only) -->
         <div id="activeSearchRow" class="filters active-search-row" style="display:none;">
@@ -118,6 +116,8 @@
 
     <div id="emptyState">Choose a style to get started.</div>
     <div id="gallery"></div>
+    <div id="accessoriesEmpty" class="accessories-empty" style="display:none;"></div>
+    <div id="accessoriesGallery" class="accessories-gallery" style="display:none;"></div>
     <footer id="galleryShowroomNote" class="waterfall-showroom-note" hidden aria-label="Photography source">
         <p class="waterfall-showroom-note-kicker">Photographed on location</p>
         <p class="waterfall-showroom-note-line">Every piece captured in our partner factory showrooms — available for your home.</p>
@@ -136,6 +136,7 @@
         </div>
 
         <div id="lightboxDetail" class="lightbox-detail">
+            <h3 id="lightboxDetailTitle" class="lightbox-detail-title" hidden></h3>
             <div class="lightbox-stage" id="lightboxStage">
                 <div class="lightbox-image-frame" id="lightboxImageWrap">
                     <img id="lightboxImg" alt="" draggable="false" />
@@ -150,27 +151,6 @@
      BOOKMARK PAGE
      ═══════════════════════════════════════ -->
 <div id="bookmarkView"></div>
-
-<!-- ═══════════════════════════════════════
-     ACCESSORIES (design room — browse only)
-     ═══════════════════════════════════════ -->
-<div id="accessoriesView" class="accessories-view" style="display:none;" aria-hidden="true">
-    <header class="accessories-header">
-        <div class="accessories-toolbar">
-            <button type="button" id="accessoriesBackBtn" class="nav-back-btn" aria-label="Back to anchor pieces"></button>
-        </div>
-        <h1 id="accessoriesTitle" class="accessories-title">Room accessories</h1>
-        <p id="accessoriesSubtitle" class="accessories-subtitle"></p>
-        <p class="accessories-disclaimer">Availability depends on which factories you buy anchor pieces from.</p>
-        <div id="accessoriesPriceFilters" class="filters price-filters accessories-price-filters"></div>
-    </header>
-    <div id="accessoriesEmpty" class="accessories-empty" style="display:none;"></div>
-    <div id="accessoriesGallery" class="accessories-gallery"></div>
-    <footer id="accessoriesShowroomNote" class="waterfall-showroom-note waterfall-showroom-note--accessories" hidden aria-label="Photography source">
-        <p class="waterfall-showroom-note-kicker">Photographed on location</p>
-        <p class="waterfall-showroom-note-line">Every piece captured in our partner factory showrooms — available for your home.</p>
-    </footer>
-</div>
 
 <!-- ═══════════════════════════════════════
      LOADING SPINNER
