@@ -165,7 +165,6 @@ const activeSearchTag    = document.getElementById('activeSearchTag');
 const designBrowseTabs     = document.getElementById('designBrowseTabs');
 const designTabCollections = document.getElementById('designTabCollections');
 const designTabAccessories = document.getElementById('designTabAccessories');
-const galleryStepHint = document.getElementById('galleryStepHint');
 const accessoriesGallery = document.getElementById('accessoriesGallery');
 const accessoriesEmpty   = document.getElementById('accessoriesEmpty');
 const scrollToTopBtn     = document.getElementById('scrollToTopBtn');
@@ -646,14 +645,10 @@ function renderPriceFilters() {
 
 function getGalleryTitle() {
     if (currentMode === 'design' && selectedRoom) {
-        const titles = {
-            living: 'Style your living room',
-            bedroom: 'Style your bedroom',
-            dining: 'Style your dining room',
-            study: 'Style your study'
-        };
-        return titles[selectedRoom] ||
-            `Style your ${formatRoomLabel(selectedRoom)}`;
+        if (designBrowseTab === 'accessories') {
+            return 'Find accessories';
+        }
+        return `Explore ${formatRoomLabel(selectedRoom)} styles`;
     }
     if (currentMode === 'explore') {
         return 'Explore Styles';
@@ -760,13 +755,6 @@ function updateGalleryHeader() {
     }
 
     updateExploreStyleCaption();
-
-    const showDesignFlow = showDesignBrowseTabs();
-
-    if (galleryStepHint) {
-        galleryStepHint.style.display =
-            showDesignFlow && designBrowseTab === 'collections' ? 'block' : 'none';
-    }
 
     if (filterContainer) {
         filterContainer.style.display =
