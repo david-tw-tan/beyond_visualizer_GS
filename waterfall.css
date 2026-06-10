@@ -1608,8 +1608,9 @@ header .active-search-row {
 }
 
 #lightbox.lightbox--detail .lightbox-content {
-    width: min(98vw, 1200px);
-    max-height: min(96vh, 100dvh);
+    width: min(94vw, 94dvw);
+    max-height: min(96vh, 96dvh);
+    padding-inline: max(12px, 1vw);
 }
 
 .lightbox-content.lightbox-content--overview {
@@ -1791,30 +1792,8 @@ header .active-search-row {
 }
 
 #lightbox.lightbox--detail .lightbox-image-frame img {
-    max-height: min(92vh, calc(100dvh - 40px));
-}
-
-/* Wide laptops / external monitors — MacBook-sized viewports already fill ~98vw */
-@media (min-width: 1400px) {
-    #lightbox.lightbox--detail .lightbox-content {
-        width: min(92vw, 1500px);
-    }
-
-    #lightbox.lightbox--detail .lightbox-image-frame img {
-        max-height: min(94vh, calc(100dvh - 32px));
-    }
-}
-
-@media (min-width: 1680px) {
-    #lightbox.lightbox--detail .lightbox-content {
-        width: min(90vw, 1680px);
-    }
-}
-
-@media (min-width: 1920px) {
-    #lightbox.lightbox--detail .lightbox-content {
-        width: min(88vw, 1840px);
-    }
+    max-width: min(94vw, 94dvw);
+    max-height: min(90vh, calc(100dvh - 72px));
 }
 
 #starBtn {
