@@ -43,13 +43,13 @@
    BASE
    ═══════════════════════════════════════════ */
 html {
-    overflow-x: hidden;
+    overflow-x: clip;
     overscroll-behavior-x: none;
 }
 
 body {
     margin: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
     overscroll-behavior-x: none;
     width: 100%;
     font-family: var(--font-body);
@@ -71,7 +71,7 @@ body {
 #galleryView {
     width: 100%;
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow-x: clip;
     box-sizing: border-box;
 }
 
@@ -1098,8 +1098,54 @@ header .active-search-row {
     color: var(--color-ink);
 }
 
-.gallery-collection-group + .gallery-collection-group .gallery-collection-group__title {
-    margin-top: 0.35rem;
+.gallery-collection-group + .gallery-collection-group {
+    margin-top: 2.5rem;
+    padding-top: 0;
+}
+
+/* Partial-width divider between Featured and More */
+.gallery-collection-group + .gallery-collection-group::before {
+    content: '';
+    display: block;
+    width: min(42vw, 11rem);
+    height: 1px;
+    margin: 0 auto 1.9rem;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--color-hairline-dark) 22%,
+        var(--color-brass-light) 50%,
+        var(--color-hairline-dark) 78%,
+        transparent 100%
+    );
+    opacity: 0.88;
+}
+
+/* Collections tab: fixed section bar — label updates Featured → More on scroll (JS) */
+.collection-group-sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 20;
+    margin: 0;
+    padding: 0.72rem 20px 0.68rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 3.2vw, 1.35rem);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+    text-align: left;
+    background: var(--color-surface-elevated);
+    border-bottom: 1px solid var(--color-hairline);
+    box-shadow: 0 4px 14px rgba(26, 26, 24, 0.06);
+}
+
+#galleryView.gallery-view--design .collection-group-sticky {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 .gallery-collection-group__grid {

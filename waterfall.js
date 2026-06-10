@@ -155,6 +155,7 @@ const stylesGuideLink = document.getElementById('stylesGuideLink');
 const stylesGuideModal = document.getElementById('stylesGuideModal');
 const stylesGuideClose = document.getElementById('stylesGuideClose');
 const stylesGuideList = document.getElementById('stylesGuideList');
+const collectionGroupSticky = document.getElementById('collectionGroupSticky');
 const accessoriesEmpty   = document.getElementById('accessoriesEmpty');
 const scrollToTopBtn     = document.getElementById('scrollToTopBtn');
 
@@ -309,6 +310,7 @@ function showView(name) {
 }
 
 function goHome() {
+    teardownCollectionGroupSticky();
     currentMode = null;
     selectedRoom = null;
     designFilters.clear();
@@ -858,6 +860,7 @@ function hideDesignBrowsePanels() {
    GALLERY RENDERING
    ═══════════════════════════════════════════ */
 function render() {
+    teardownCollectionGroupSticky();
     gallery.innerHTML = '';
     gallery.classList.remove('gallery-collections-grouped');
     if (accessoriesGallery) accessoriesGallery.innerHTML = '';
@@ -1282,6 +1285,7 @@ function createGalleryCollectionGroup(title, items, columnCount, options = {}) {
 
     const section = document.createElement('section');
     section.className = 'gallery-collection-group';
+    section.dataset.sectionTitle = title;
 
     const heading = document.createElement('h2');
     heading.className = 'gallery-collection-group__title';
@@ -1306,7 +1310,154 @@ function createGalleryCollectionGroup(title, items, columnCount, options = {}) {
     return section;
 }
 
+let collectionStickyScrollRaf = null;
+let collectionStickyScrollBound = false;
+
+function teardownCollectionGroupSticky() {
+    if (collectionGroupSticky) {
+        collectionGroupSticky.hidden = true;
+        collectionGroupSticky.textContent = '';
+        collectionGroupSticky.style.top = '';
+    }
+    if (gallery) {
+        gallery.style.paddingTop = '';
+    }
+    if (views.gallery) {
+        views.gallery.classList.remove('gallery-view--collections-sticky-active');
+    }
+}
+
+function getCollectionStickyAnchorTop() {
+    const header = views.gallery?.querySelector('header');
+    return header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+}
+
+function resolveActiveCollectionGroup(groups, probeY) {
+    let activeGroup = groups[0];
+    groups.forEach(group => {
+        if (group.getBoundingClientRect().top <= probeY) {
+            activeGroup = group;
+        }
+    });
+    return activeGroup;
+}
+
+function shouldShowCollectionGroupSticky(activeGroup, stickyTop) {
+    const titleEl = activeGroup?.querySelector('.gallery-collection-group__title');
+    if (!titleEl) return false;
+    return titleEl.getBoundingClientRect().bottom <= stickyTop + 2;
+}
+
+function updateCollectionGroupStickyLayout() {
+    if (!collectionGroupSticky || collectionGroupSticky.hidden) return;
+
+    const top = getCollectionStickyAnchorTop();
+    collectionGroupSticky.style.top = `${top}px`;
+
+    const barHeight = collectionGroupSticky.offsetHeight;
+    if (gallery.classList.contains('gallery-collections-grouped')) {
+        gallery.style.paddingTop = `${barHeight}px`;
+    }
+}
+
+const COLLECTION_STICKY_PAGE_TOP_THRESHOLD = 2;
+
+function updateCollectionGroupStickyLabel() {
+    if (!collectionGroupSticky || collectionGroupSticky.hidden) return;
+
+    const groups = gallery.querySelectorAll('.gallery-collection-group');
+    if (!groups.length) return;
+
+    const probe = collectionGroupSticky.getBoundingClientRect().bottom + 4;
+    const activeGroup = resolveActiveCollectionGroup(groups, probe);
+    const active = activeGroup.dataset.sectionTitle || '';
+
+    if (getWaterfallScrollTop() <= COLLECTION_STICKY_PAGE_TOP_THRESHOLD) {
+        collectionGroupSticky.textContent = active;
+        return;
+    }
+
+    const cards = activeGroup.querySelectorAll('.collection-card');
+    const total = cards.length;
+    let index = 0;
+
+    cards.forEach((card, i) => {
+        if (card.getBoundingClientRect().top <= probe) {
+            index = i + 1;
+        }
+    });
+
+    if (index > 0 && total > 0) {
+        collectionGroupSticky.textContent = `${active} (${index} / ${total})`;
+    } else {
+        collectionGroupSticky.textContent = active;
+    }
+}
+
+function refreshCollectionGroupSticky() {
+    if (!collectionGroupSticky || !gallery.classList.contains('gallery-collections-grouped')) {
+        teardownCollectionGroupSticky();
+        return;
+    }
+
+    const groups = gallery.querySelectorAll('.gallery-collection-group');
+    if (!groups.length) {
+        teardownCollectionGroupSticky();
+        return;
+    }
+
+    const stickyTop = getCollectionStickyAnchorTop();
+    const probe = stickyTop + 4;
+    const activeGroup = resolveActiveCollectionGroup(groups, probe);
+
+    if (!shouldShowCollectionGroupSticky(activeGroup, stickyTop)) {
+        collectionGroupSticky.hidden = true;
+        collectionGroupSticky.textContent = '';
+        gallery.style.paddingTop = '';
+        return;
+    }
+
+    views.gallery?.classList.add('gallery-view--collections-sticky-active');
+    collectionGroupSticky.hidden = false;
+    updateCollectionGroupStickyLayout();
+    updateCollectionGroupStickyLabel();
+}
+
+function onCollectionGroupStickyScroll() {
+    if (collectionStickyScrollRaf) return;
+    collectionStickyScrollRaf = requestAnimationFrame(() => {
+        collectionStickyScrollRaf = null;
+        refreshCollectionGroupSticky();
+    });
+}
+
+function setupCollectionGroupSticky() {
+    if (!collectionGroupSticky || !gallery.classList.contains('gallery-collections-grouped')) {
+        teardownCollectionGroupSticky();
+        return;
+    }
+
+    const groups = gallery.querySelectorAll('.gallery-collection-group');
+    if (!groups.length) {
+        teardownCollectionGroupSticky();
+        return;
+    }
+
+    requestAnimationFrame(() => refreshCollectionGroupSticky());
+
+    if (!collectionStickyScrollBound) {
+        collectionStickyScrollBound = true;
+        window.addEventListener('scroll', onCollectionGroupStickyScroll, { passive: true });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('scroll', onCollectionGroupStickyScroll, {
+                passive: true
+            });
+        }
+    }
+}
+
 function renderDesignCollectionsBrowse(list) {
+    teardownCollectionGroupSticky();
     emptyState.style.display = 'none';
     gallery.style.removeProperty('display');
     gallery.classList.add('gallery-collections-grouped');
@@ -1317,6 +1468,7 @@ function renderDesignCollectionsBrowse(list) {
 
     if (featured.length === 0 && more.length === 0) {
         gallery.classList.remove('gallery-collections-grouped');
+        teardownCollectionGroupSticky();
         emptyState.style.display = 'flex';
         emptyState.textContent = getEmptyMessage();
         setGalleryShowroomNoteVisible(false);
@@ -1349,9 +1501,11 @@ function renderDesignCollectionsBrowse(list) {
     lastGalleryLayoutColumns = null;
     setGalleryShowroomNoteVisible(true);
     updateScrollToTopButton();
+    setupCollectionGroupSticky();
 }
 
 function renderAccessoriesBrowse() {
+    teardownCollectionGroupSticky();
     if (!accessoriesGallery || !accessoriesEmpty) return;
 
     emptyState.style.display = 'none';
@@ -2413,6 +2567,9 @@ function handleMasonryResize() {
     refreshGalleryLayoutIfColumnsChanged();
     refreshBookmarkLayoutIfColumnsChanged();
     refreshAccessoriesLayoutIfColumnsChanged();
+    if (collectionGroupSticky && !collectionGroupSticky.hidden) {
+        refreshCollectionGroupSticky();
+    }
 }
 
 window.addEventListener('resize', () => {
