@@ -765,6 +765,11 @@ a {
     color: var(--color-ink-muted);
 }
 
+.lp-benefit-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .lp-benefit-check {
     flex-shrink: 0;
     width: 1rem;
