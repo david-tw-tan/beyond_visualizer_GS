@@ -6,7 +6,6 @@ const STYLE_OPTIONS = [
     'minimalist luxury',
     'refined luxury',
     'ultra luxury',
-    'mid century luxury',
     'playful luxury'
 ];
 
@@ -17,8 +16,6 @@ const STYLE_DESCRIPTIONS = {
         'Elegant luxury defined by premium materials, balanced richness, and timeless appeal.',
     'ultra luxury':
         'Bold, expressive interiors defined by maximal opulence and statement-making design.',
-    'mid century luxury':
-        'Iconic mid-century forms reimagined through a modern luxury lens.',
     'playful luxury':
         'Youthful, expressive, and experimental design inspired by emerging trends and social-media culture.'
 };
@@ -28,7 +25,6 @@ const STYLE_LABELS = {
     'minimalist luxury': 'Minimalist',
     'refined luxury': 'Refined Luxury',
     'ultra luxury': 'Ultra Luxury',
-    'mid century luxury': 'Mid Century',
     'playful luxury': 'Playful'
 };
 
@@ -53,17 +49,7 @@ const ROOM_OPTIONS = ['bedroom', 'living', 'dining', 'study'];
    Target share of visible tiles that are img_category "collection"
    (remainder = anchor loose_item heroes; collection_item never in waterfall).
    ═══════════════════════════════════════════ */
-const EXPLORE_COLL_RATIO = 0.70;
 const DESIGN_COLL_RATIO  = 0.70;
-
-/** Explore Styles only: relative room frequency in the feed (higher = more tiles) */
-const EXPLORE_ROOM_WEIGHT = {
-    living: 2,
-    bedroom: 1,
-    dining: 1,
-    study: 1
-};
-const EXPLORE_ROOM_ORDER = ['living', 'bedroom', 'dining', 'study'];
 
 /**
  * Browse feed (search off): every anchor A hero once, 70/30 collection vs anchor loose
@@ -100,9 +86,8 @@ let MASTER = [];
 let SHUFFLED = [];
 let BOOKMARKS = new Map();
 
-let currentMode = null;        // 'explore' | 'design'
-let selectedRoom = null;       // for design mode
-let exploreFilter = null;      // single style for explore mode
+let currentMode = null;        // null (home) | 'design'
+let selectedRoom = null;
 let designFilters = new Set(); // multi-select styles for design mode
 
 let currentLightboxItem = null;
@@ -166,6 +151,10 @@ const designBrowseTabs     = document.getElementById('designBrowseTabs');
 const designTabCollections = document.getElementById('designTabCollections');
 const designTabAccessories = document.getElementById('designTabAccessories');
 const accessoriesGallery = document.getElementById('accessoriesGallery');
+const stylesGuideLink = document.getElementById('stylesGuideLink');
+const stylesGuideModal = document.getElementById('stylesGuideModal');
+const stylesGuideClose = document.getElementById('stylesGuideClose');
+const stylesGuideList = document.getElementById('stylesGuideList');
 const accessoriesEmpty   = document.getElementById('accessoriesEmpty');
 const scrollToTopBtn     = document.getElementById('scrollToTopBtn');
 
@@ -212,6 +201,7 @@ function isWaterfallScrollContextActive() {
     if (bookmarkView && bookmarkView.style.display === 'block') return false;
     if (lightbox && lightbox.style.display === 'flex') return false;
     if (searchModal && searchModal.style.display === 'flex') return false;
+    if (stylesGuideModal && stylesGuideModal.style.display === 'flex') return false;
     return views.gallery && views.gallery.style.display !== 'none' && !!currentMode;
 }
 
@@ -321,7 +311,6 @@ function showView(name) {
 function goHome() {
     currentMode = null;
     selectedRoom = null;
-    exploreFilter = null;
     designFilters.clear();
     designBrowseTab = 'collections';
     priceFilters = new Set(['premium', 'luxury']);
@@ -397,76 +386,6 @@ function mixWeighted(collections, looseItems, ratio, exhaustPool = false) {
     return result;
 }
 
-/** Build pick cycle from room weights (e.g. living twice per bedroom once) */
-function buildExploreRoomPickCycle(weights) {
-    const scale = 2;
-    const cycle = [];
-    EXPLORE_ROOM_ORDER.forEach(room => {
-        const n = Math.max(0, Math.round((weights[room] ?? 1) * scale));
-        for (let i = 0; i < n; i++) cycle.push(room);
-    });
-    return cycle.length ? cycle : [...EXPLORE_ROOM_ORDER];
-}
-
-/** Round-robin across rooms so tiles don't cluster by room_type */
-function interleaveRoomQueues(roomPools, pickCycle) {
-    const queues = {};
-    Object.entries(roomPools).forEach(([room, items]) => {
-        queues[room] = [...items];
-    });
-
-    const remaining = () =>
-        Object.values(queues).reduce((sum, q) => sum + q.length, 0);
-
-    const result = [];
-    let cycleIdx = 0;
-
-    while (remaining() > 0) {
-        let placed = false;
-        for (let attempt = 0; attempt < pickCycle.length; attempt++) {
-            const room = pickCycle[(cycleIdx + attempt) % pickCycle.length];
-            if (queues[room]?.length) {
-                result.push(queues[room].shift());
-                cycleIdx = (cycleIdx + attempt + 1) % pickCycle.length;
-                placed = true;
-                break;
-            }
-        }
-        if (!placed) break;
-    }
-
-    return result;
-}
-
-/**
- * Explore Styles: all rooms for one style, collection/loose mix per room,
- * then weighted interleave (living favored, rooms spread out).
- */
-function buildExploreFeed(list, collRatio) {
-    const roomPools = {};
-
-    EXPLORE_ROOM_ORDER.forEach(room => {
-        const roomList = list.filter(x => x.room_type === room);
-        if (roomList.length === 0) return;
-
-        const coll = roomList.filter(x => x.img_category === 'collection');
-        const loose = roomList.filter(x => x.img_category === 'loose_item');
-        roomPools[room] = mixWeighted(coll, loose, collRatio, true);
-    });
-
-    const pickCycle = buildExploreRoomPickCycle(EXPLORE_ROOM_WEIGHT);
-    const mixed = interleaveRoomQueues(roomPools, pickCycle);
-
-    const other = list.filter(x => !EXPLORE_ROOM_ORDER.includes(x.room_type));
-    if (other.length) {
-        const coll = other.filter(x => x.img_category === 'collection');
-        const loose = other.filter(x => x.img_category === 'loose_item');
-        return mixed.concat(mixWeighted(coll, loose, collRatio, true));
-    }
-
-    return mixed;
-}
-
 function buildDesignBrowseFeed(list, collRatio) {
     const collections = list.filter(x => x.img_category === 'collection');
     const looseItems = list.filter(x => x.img_category === 'loose_item');
@@ -474,36 +393,13 @@ function buildDesignBrowseFeed(list, collRatio) {
 }
 
 /** One tile per anchor A hero — 70/30 mix, no repeats or variant tiles. */
-function buildBrowseFeed(list, mode) {
+function buildBrowseFeed(list) {
     const browse = list.filter(x => isAnchorBrowseItem(x) && isHeroImage(x));
-    const collRatio = mode === 'explore' ? EXPLORE_COLL_RATIO : DESIGN_COLL_RATIO;
-    const items = mode === 'explore'
-        ? buildExploreFeed(browse, collRatio)
-        : buildDesignBrowseFeed(browse, collRatio);
-
-    return { items };
+    return { items: buildDesignBrowseFeed(browse, DESIGN_COLL_RATIO) };
 }
 
 /* ═══════════════════════════════════════════
-   EXPLORE STYLES
-   ═══════════════════════════════════════════ */
-function enterExplore() {
-    currentMode = 'explore';
-    selectedRoom = null;
-    designFilters.clear();
-    designBrowseTab = 'collections';
-
-    // Pick a random style
-    const randomStyle = STYLE_OPTIONS[Math.floor(Math.random() * STYLE_OPTIONS.length)];
-    exploreFilter = randomStyle;
-
-    showView('gallery');
-    renderFilters();
-    render();
-}
-
-/* ═══════════════════════════════════════════
-   START  —  Room (step 1) + Explore link
+   START  —  Room picker (step 1)
    ═══════════════════════════════════════════ */
 function selectAllDesignStyles() {
     designFilters.clear();
@@ -513,7 +409,6 @@ function selectAllDesignStyles() {
 function enterDesignGallery() {
     selectAllDesignStyles();
     currentMode = 'design';
-    exploreFilter = null;
     designBrowseTab = 'collections';
     showView('gallery');
     updateGalleryHeader();
@@ -537,7 +432,47 @@ document.querySelectorAll('#homeView .step-card').forEach(card => {
     });
 });
 
-document.getElementById('exploreStylesLink').addEventListener('click', enterExplore);
+/* ═══════════════════════════════════════════
+   STYLE GUIDE MODAL  (home — placeholder tutorial)
+   ═══════════════════════════════════════════ */
+function renderStylesGuideList() {
+    if (!stylesGuideList) return;
+    stylesGuideList.innerHTML = '';
+
+    STYLE_OPTIONS.forEach(style => {
+        const article = document.createElement('article');
+        article.className = 'styles-guide-item';
+
+        const title = document.createElement('h3');
+        title.className = 'styles-guide-item__title';
+        title.textContent = styleLabel(style);
+
+        const body = document.createElement('p');
+        body.className = 'styles-guide-item__body';
+        body.textContent = STYLE_DESCRIPTIONS[style] || '';
+
+        article.appendChild(title);
+        article.appendChild(body);
+        stylesGuideList.appendChild(article);
+    });
+}
+
+function openStylesGuideModal() {
+    if (!stylesGuideModal) return;
+    renderStylesGuideList();
+    stylesGuideModal.style.display = 'flex';
+    stylesGuideClose?.focus();
+}
+
+function closeStylesGuideModal() {
+    if (!stylesGuideModal) return;
+    stylesGuideModal.style.display = 'none';
+}
+
+stylesGuideLink?.addEventListener('click', openStylesGuideModal);
+stylesGuideClose?.addEventListener('click', closeStylesGuideModal);
+stylesGuideModal?.querySelector('.styles-guide-modal-backdrop')
+    ?.addEventListener('click', closeStylesGuideModal);
 
 /* ═══════════════════════════════════════════
    HOME BUTTON
@@ -550,17 +485,9 @@ document.getElementById('homeBtn').addEventListener('click', goHome);
 function renderFilters() {
     filterContainer.innerHTML = '';
 
-    // Show/hide design-mode-only UI
-    if (currentMode === 'design') {
-        searchIcon.style.display = 'flex';
-        priceFilterContainer.style.display = '';
-        renderPriceFilters();
-    } else {
-        searchIcon.style.display = 'none';
-        priceFilterContainer.style.display = 'none';
-        productSearch = '';
-        closeSearchModal();
-    }
+    searchIcon.style.display = 'flex';
+    priceFilterContainer.style.display = '';
+    renderPriceFilters();
 
     // Update active search tag visibility
     updateActiveSearchTag();
@@ -572,9 +499,7 @@ function renderFilters() {
         btn.className = 'filter-btn style-filter-btn';
         btn.dataset.cat = style;
 
-        const isActive = currentMode === 'explore'
-            ? exploreFilter === style
-            : designFilters.has(style);
+        const isActive = designFilters.has(style);
 
         if (isActive) btn.classList.add('active');
         btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
@@ -682,9 +607,6 @@ function getGalleryTitle() {
         }
         return `Explore ${formatRoomLabel(selectedRoom)} styles`;
     }
-    if (currentMode === 'explore') {
-        return 'Explore Styles';
-    }
     return 'Beyond Showrooms';
 }
 
@@ -719,6 +641,14 @@ function hasOrigBrandTag(item) {
 function getCollectionLightboxTitle(item) {
     if (!item || item.img_category !== 'collection' || !hasOrigBrandTag(item)) return null;
     return `${item.orig_brand_tag.trim()} Inspired Collection`;
+}
+
+/** Title for collection browse cards (branded, style-based, or generic). */
+function getCollectionBrowseTitle(item) {
+    const branded = getCollectionLightboxTitle(item);
+    if (branded) return branded;
+    if (item?.style_cat) return `${styleLabel(item.style_cat)} Collection`;
+    return 'Curated Collection';
 }
 
 function setDesignBrowseTab(tab) {
@@ -759,18 +689,6 @@ function updateDesignBrowseTabs() {
     }
 }
 
-function updateExploreStyleCaption() {
-    const el = document.getElementById('exploreStyleCaption');
-    if (!el) return;
-    if (currentMode === 'explore' && exploreFilter) {
-        el.style.display = 'block';
-        el.textContent = STYLE_DESCRIPTIONS[exploreFilter] || '';
-    } else {
-        el.style.display = 'none';
-        el.textContent = '';
-    }
-}
-
 function updateGalleryHeader() {
     if (!galleryTitle) return;
     const title = getGalleryTitle();
@@ -778,15 +696,12 @@ function updateGalleryHeader() {
     document.title = title;
 
     if (bookmarkBtn) {
-        bookmarkBtn.style.display = currentMode === 'explore' ? 'none' : 'flex';
+        bookmarkBtn.style.display = 'flex';
     }
 
     if (views.gallery) {
-        views.gallery.classList.toggle('gallery-view--explore', currentMode === 'explore');
         views.gallery.classList.toggle('gallery-view--design', currentMode === 'design');
     }
-
-    updateExploreStyleCaption();
 
     if (filterContainer) {
         filterContainer.style.display =
@@ -797,21 +712,15 @@ function updateGalleryHeader() {
 }
 
 function handleFilterClick(style, btn) {
-    if (currentMode === 'explore') {
-        exploreFilter = style;
-        renderFilters();
-        render();
-    } else if (currentMode === 'design') {
-        if (designFilters.has(style)) {
-            designFilters.delete(style);
-        } else {
-            designFilters.add(style);
-        }
-        btn.classList.toggle('active');
-        btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
-        updateGalleryHeader();
-        render();
+    if (designFilters.has(style)) {
+        designFilters.delete(style);
+    } else {
+        designFilters.add(style);
     }
+    btn.classList.toggle('active');
+    btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+    updateGalleryHeader();
+    render();
 }
 
 /* ═══════════════════════════════════════════
@@ -838,13 +747,6 @@ function closeSearchModal() {
 searchIcon.addEventListener('click', openSearchModal);
 searchModalClose.addEventListener('click', closeSearchModal);
 searchModal.querySelector('.search-modal-backdrop').addEventListener('click', closeSearchModal);
-
-// Escape closes modal
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && searchModal.style.display === 'flex') {
-        closeSearchModal();
-    }
-});
 
 /* ═══════════════════════════════════════════
    SEARCH  —  Autocomplete + Filter (Modal)
@@ -976,9 +878,7 @@ function render() {
 
     let list = SHUFFLED;
 
-    if (currentMode === 'explore' && exploreFilter) {
-        list = list.filter(x => x.style_cat === exploreFilter);
-    } else if (currentMode === 'design' && selectedRoom) {
+    if (currentMode === 'design' && selectedRoom) {
         // Product search matches img_product_type / img_category across rooms (not only selectedRoom).
         if (!productSearch) {
             list = list.filter(x => x.room_type === selectedRoom);
@@ -1033,7 +933,7 @@ function render() {
     } else {
         list = list.filter(isHeroImage);
         list = list.filter(isAnchorBrowseItem);
-        mixed = buildBrowseFeed(list, currentMode).items;
+        mixed = buildBrowseFeed(list).items;
         const collN = mixed.filter(x => x.img_category === 'collection').length;
         const looseN = mixed.filter(x => x.img_category === 'loose_item').length;
         console.log('[WATERFALL]', currentMode,
@@ -1063,9 +963,6 @@ function render() {
 }
 
 function getEmptyMessage() {
-    if (currentMode === 'explore') {
-        return `No items found for "${styleLabel(exploreFilter)}". Try another style.`;
-    }
     if (currentMode === 'design') {
         if (designFilters.size === 0) {
             return 'Choose a style to get started.';
@@ -1214,6 +1111,12 @@ function getGalleryColumnCount() {
     return 4;
 }
 
+/** Collections tab: editorial grid — 1 column mobile, 2 columns desktop. */
+function getCollectionsGridColumnCount() {
+    const w = views.gallery?.clientWidth || gallery?.clientWidth || window.innerWidth;
+    return w < 768 ? 1 : 2;
+}
+
 function getBookmarkColumnCount(container) {
     const w = container.clientWidth || window.innerWidth;
     if (w <= 1000) return 2;
@@ -1224,6 +1127,7 @@ const GALLERY_COLUMN_STAGGER_MS = 90;
 let galleryStaggerGeneration = 0;
 /** Last masonry column count; resize re-renders only when this changes (avoids mobile URL-bar refresh) */
 let lastGalleryLayoutColumns = null;
+let lastCollectionsGridColumns = null;
 let lastAccessoriesLayoutColumns = null;
 let lastBookmarkLayoutColumns = null;
 
@@ -1284,7 +1188,7 @@ function distributeMasonryCards(container, cards, columnCount, options = {}) {
 
 function syncCardStars(container, thumbUrl, bookmarked) {
     if (!thumbUrl || !container) return;
-    container.querySelectorAll('.card').forEach(card => {
+    container.querySelectorAll('.card, .collection-card').forEach(card => {
         if (card.dataset.thumbUrl !== thumbUrl) return;
         const star = card.querySelector('.star-thumb');
         if (star) star.style.display = bookmarked ? 'flex' : 'none';
@@ -1333,6 +1237,46 @@ function buildDesignCollectionsBrowseGroups(list) {
     };
 }
 
+function createCollectionBrowseCard(item, options = {}) {
+    const hero = toHeroItem(item);
+    const card = document.createElement('article');
+    card.className = 'collection-card';
+    card.dataset.thumbUrl = hero.thumbnail_url;
+
+    const media = document.createElement('div');
+    media.className = 'collection-card__media';
+
+    const img = document.createElement('img');
+    img.alt = getCollectionBrowseTitle(item);
+    initLazyThumb(img, item.thumbnail_url, { eager: options.eager });
+    media.appendChild(img);
+
+    if (shouldShowSetBadge(item)) {
+        const badge = document.createElement('div');
+        badge.className = 'collection-badge';
+        badge.textContent = 'SET';
+        media.appendChild(badge);
+    }
+
+    const star = document.createElement('div');
+    star.className = 'star-thumb';
+    star.textContent = '★';
+    if (isBookmarked(hero)) {
+        star.style.display = 'flex';
+    }
+    media.appendChild(star);
+
+    const title = document.createElement('h3');
+    title.className = 'collection-card__title';
+    title.textContent = getCollectionBrowseTitle(item);
+
+    card.appendChild(media);
+    card.appendChild(title);
+    card.addEventListener('click', () => openLightbox(item));
+
+    return card;
+}
+
 function createGalleryCollectionGroup(title, items, columnCount, options = {}) {
     if (items.length === 0) return null;
 
@@ -1344,14 +1288,20 @@ function createGalleryCollectionGroup(title, items, columnCount, options = {}) {
     heading.textContent = title;
     section.appendChild(heading);
 
-    const masonry = document.createElement('div');
-    masonry.className = 'gallery-collection-group__masonry masonry-layout';
-    const makeCard = makeEagerGalleryCardFactory(columnCount);
-    const cards = items.map(item => makeCard(item));
-    distributeMasonryCards(masonry, cards, columnCount, {
-        stagger: Boolean(options.stagger)
+    const grid = document.createElement('div');
+    grid.className = 'gallery-collection-group__grid';
+    grid.dataset.columns = String(columnCount);
+
+    const eagerCount = Math.min(items.length, columnCount * 2);
+    items.forEach((item, i) => {
+        const card = createCollectionBrowseCard(item, { eager: i < eagerCount });
+        if (options.stagger) {
+            card.classList.add('collection-card--stagger');
+            card.style.setProperty('--collection-stagger', `${Math.min(i, 14) * 50}ms`);
+        }
+        grid.appendChild(card);
     });
-    section.appendChild(masonry);
+    section.appendChild(grid);
 
     return section;
 }
@@ -1363,14 +1313,14 @@ function renderDesignCollectionsBrowse(list) {
     gallery.innerHTML = '';
 
     const { featured, more } = buildDesignCollectionsBrowseGroups(list);
-    const columnCount = getGalleryColumnCount();
+    const columnCount = getCollectionsGridColumnCount();
 
     if (featured.length === 0 && more.length === 0) {
         gallery.classList.remove('gallery-collections-grouped');
         emptyState.style.display = 'flex';
         emptyState.textContent = getEmptyMessage();
         setGalleryShowroomNoteVisible(false);
-        lastGalleryLayoutColumns = null;
+        lastCollectionsGridColumns = null;
         updateScrollToTopButton();
         return;
     }
@@ -1395,7 +1345,8 @@ function renderDesignCollectionsBrowse(list) {
     );
     if (moreGroup) gallery.appendChild(moreGroup);
 
-    lastGalleryLayoutColumns = columnCount;
+    lastCollectionsGridColumns = columnCount;
+    lastGalleryLayoutColumns = null;
     setGalleryShowroomNoteVisible(true);
     updateScrollToTopButton();
 }
@@ -1897,6 +1848,10 @@ lightbox.addEventListener('click', (e) => {
 });
 
 function handleEscape() {
+    if (stylesGuideModal?.style.display === 'flex') {
+        closeStylesGuideModal();
+        return;
+    }
     if (searchModal.style.display === 'flex') {
         closeSearchModal();
         return;
@@ -2370,7 +2325,7 @@ function createBookmarkCard(item, { starred, linked, role, eager = false }) {
 
     const img = document.createElement('img');
     img.alt = hero.filename_raw || 'Furniture';
-    initLazyThumb(img, hero.thumbnail_url, { eager: options.eager });
+    initLazyThumb(img, hero.thumbnail_url, { eager });
 
     const caption = document.createElement('div');
     caption.className = 'bookmark-card-caption';
@@ -2417,6 +2372,13 @@ let masonryResizeTimer = null;
 function refreshGalleryLayoutIfColumnsChanged() {
     if (views.gallery.style.display === 'none' || !currentMode) {
         lastGalleryLayoutColumns = null;
+        lastCollectionsGridColumns = null;
+        return;
+    }
+    if (isDesignCollectionsTab() && !productSearch) {
+        const cols = getCollectionsGridColumnCount();
+        if (cols === lastCollectionsGridColumns) return;
+        render();
         return;
     }
     const cols = getGalleryColumnCount();

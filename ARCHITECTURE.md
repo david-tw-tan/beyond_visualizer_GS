@@ -21,33 +21,18 @@ All mix ratios target the **share of visible tiles**, not the raw pool size (`mi
 
 | Constant | Default | Used in |
 |----------|---------|---------|
-| `EXPLORE_COLL_RATIO` | 0.70 | Explore cycles 1–3 (hero + B/repeat passes) |
-| `DESIGN_COLL_RATIO` | 0.70 | Design cycles 1–3 |
-| `FEED_CYCLE_COUNT` | 3 | Browse scroll depth |
+| `DESIGN_COLL_RATIO` | 0.70 | Keyword-search masonry browse |
 
 `mixWeighted()` picks how many collection vs loose heroes to show, then **interleaves** loose items evenly between collection tiles so loose doesn’t cluster at the end.
 
-### Explore Styles — room weighting
+### Design a Room (main path)
 
-- One active style filter; all rooms included.
-- Per room: `mixWeighted(collection, loose, ratio)` into `roomPools`.
-- **Interleave across rooms** via `interleaveRoomQueues()` + `EXPLORE_ROOM_WEIGHT` (default: `living: 2`, others `1`) so living appears more often but rooms don’t stack in blocks.
-
-### Design a Room
-
+- Home → pick room → gallery (all styles on by default).
+- **Collections tab:** grouped browse (`renderDesignCollectionsBrowse`) — Featured (brand-tagged) then More; editorial grid (1 col mobile, 2 col desktop) with titled cards (`createCollectionBrowseCard`). Images use 4:3 cover crop (no extreme-landscape thumb logic).
 - Filtered by selected room, styles, price, optional product search.
-- Single pool: `mixWeighted()` (no room interleave).
+- Keyword-search results use single-pass masonry via `buildBrowseFeed()` (70/30 collection vs anchor loose).
 
-### Three-cycle browse feed (`FEED_CYCLE_COUNT = 3`)
-
-Concatenated scroll (not infinite scroll). Cycles 1–2 use the same **70/30** collection vs anchor-loose target as `DESIGN_COLL_RATIO` / `EXPLORE_COLL_RATIO`.
-
-1. **Cycle 1:** Anchor hero `_A` images (`anchor_item === "yes"`), mixed 70/30.
-2. **Cycle 2:** **Remaining** anchor `_A` heroes not in cycle 1 — same 70/30 (breadth before detail).
-3. **Cycle 3:** Any anchor `_A` still unshown (same mix); if **all** anchor heroes were shown, then at most one **`_B.jpg`** per piece already in the feed, else **repeat** that hero `_A`. `_C+` lightbox only.
-4. **Tail (guaranteed):** Any anchor `_A` still missing after cycles 1–3 — append **all** of them (`mixWeighted(..., exhaustPool: true)`), 70/30 interleave without cap.
-
-Keyword search skips multi-cycle logic and shuffles the filtered list (see **Keyword search** below).
+Home also offers **Style guide** modal (placeholder tutorial) — not a gallery browse path.
 
 ### Accessories view (design room only)
 
@@ -60,7 +45,7 @@ Keyword search skips multi-cycle logic and shuffles the filtered list (see **Key
 
 ## Scroll to top (gallery waterfalls)
 
-Fixed **↑** control appears after ~520px scroll on **Explore**, **Design** gallery, and **Accessories** (not bookmark manager, lightbox, or search modal). Scrolls the active surface (`window` or `#accessoriesView`) smoothly to top.
+Fixed **↑** control appears after ~520px scroll on **Design** gallery and **Accessories** (not bookmark manager, lightbox, or search modal). Scrolls the active surface (`window` or `#accessoriesView`) smoothly to top.
 
 ---
 
@@ -153,12 +138,12 @@ Images: `filename_raw` → `img_db_final/{file}` (see `THUMBNAIL_BASE_URL`). Dep
 
 | Mode | Entry | Filters |
 |------|-------|---------|
-| **Explore Styles** | Start → “Explore styles →” → random style gallery | Style pills; all rooms |
-| **Design a Room** | Start → room → style(s) → results | Room, multi-style, premium/luxury, optional keyword search (see below). |
+| **Design a Room** | Start → room → collections gallery | Room, multi-style, premium/luxury, optional keyword search (see below). |
+| **Style guide** | Start → “Take the style guide” → modal | Read-only; no gallery filters |
 
 ### Keyword search (Design mode only)
 
-**Where:** Design a Room gallery only (🔍 icon). Explore Styles has no product search.
+**Where:** Design gallery only (🔍 icon).
 
 **Match rules** (both must pass style + price filters first):
 
@@ -198,7 +183,7 @@ Images: `filename_raw` → `img_db_final/{file}` (see `THUMBNAIL_BASE_URL`). Dep
 
 | Task | Where |
 |------|--------|
-| Feed mix / room bias / cycles | `waterfall.js` CONFIG + `buildExploreFeed`, `mixWeighted`, `buildMultiCycleBrowseFeed` |
+| Feed mix | `waterfall.js` CONFIG + `buildBrowseFeed`, `buildDesignBrowseFeed`, `mixWeighted` |
 | Thumb crop / texture rate | `waterfall.js` CONFIG + `pickExtremeLandscapeDisplayRatio` |
 | Lightbox | `openLightbox`, `openLightboxOverview`, `openLightboxDetail`, `closeLightbox`, `handleEscape` |
 | Bookmarks | `buildBookmarkGroups`, `toggleBookmark`, `renderBookmarkView` |

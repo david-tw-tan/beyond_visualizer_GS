@@ -15,7 +15,7 @@
 <body>
 
 <!-- ═══════════════════════════════════════
-     START — room + explore link (step 1)
+     START — room picker (step 1)
      ═══════════════════════════════════════ -->
 <div id="homeView">
     <div class="home-content">
@@ -55,9 +55,9 @@
             </div>
         </div>
 
-        <p class="home-explore-row">
-            Seeking inspiration?
-            <button type="button" id="exploreStylesLink" class="home-explore-link">Explore our styles →</button>
+        <p class="home-style-guide-row">
+            Unsure about styles?
+            <button type="button" id="stylesGuideLink" class="home-style-guide-link">Take the style guide →</button>
         </p>
     </div>
 </div>
@@ -80,7 +80,7 @@
 </div>
 
 <!-- ═══════════════════════════════════════
-     GALLERY VIEW  (Explore + Design results)
+     GALLERY VIEW
      ═══════════════════════════════════════ -->
 <div id="galleryView" style="display:none;">
     <header>
@@ -96,8 +96,6 @@
         </div>
 
         <div id="filterContainer" class="filters gallery-header-filters gallery-header-style-filters"></div>
-
-        <p id="exploreStyleCaption" class="explore-style-caption" style="display:none;" aria-live="polite"></p>
 
         <div id="priceFilterContainer" class="filters price-filters gallery-header-price-filters" style="display:none;"></div>
 
@@ -156,6 +154,33 @@
      ═══════════════════════════════════════ -->
 <div id="spinnerOverlay" class="spinner-overlay">
     <div class="spinner"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STYLE GUIDE MODAL  (placeholder tutorial)
+     ═══════════════════════════════════════ -->
+<div id="stylesGuideModal" class="styles-guide-modal" style="display:none;">
+    <div class="styles-guide-modal-backdrop"></div>
+    <div
+        class="styles-guide-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="stylesGuideTitle"
+    >
+        <button type="button" id="stylesGuideClose" class="styles-guide-modal-close" aria-label="Close">✕</button>
+        <header class="styles-guide-header">
+            <p class="styles-guide-eyebrow">Self-guided</p>
+            <h2 id="stylesGuideTitle" class="styles-guide-title">Find Your Style</h2>
+            <p class="styles-guide-lead">
+                A quick introduction to the styles in our collections — so you can browse with confidence.
+            </p>
+        </header>
+        <div id="stylesGuideList" class="styles-guide-list" aria-live="polite"></div>
+        <footer class="styles-guide-footer">
+            <p class="styles-guide-footer-note">Full tutorial with room examples — coming soon.</p>
+            <p class="styles-guide-footer-hint">When you&apos;re ready, select a room above to explore curated collections.</p>
+        </footer>
+    </div>
 </div>
 
 <!-- ═══════════════════════════════════════
