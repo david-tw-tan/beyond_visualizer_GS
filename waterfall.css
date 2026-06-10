@@ -1217,6 +1217,15 @@ header .active-search-row {
     overflow: hidden;
 }
 
+.thumb-media:has(.thumb-img--pending) {
+    min-height: 7.5rem;
+    background: var(--color-surface-warm);
+}
+
+.thumb-img--pending {
+    opacity: 0;
+}
+
 .thumb-media img {
     width: 100%;
     max-width: 100%;
@@ -1566,6 +1575,19 @@ header .active-search-row {
 /* ═══════════════════════════════════════════
    LIGHTBOX
    ═══════════════════════════════════════════ */
+html.lightbox-scroll-locked,
+body.lightbox-scroll-locked {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+body.lightbox-scroll-locked {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
 #lightbox {
     position: fixed;
     inset: 0;
@@ -1575,6 +1597,7 @@ header .active-search-row {
     justify-content: center;
     z-index: 1000;
     overflow: hidden;
+    overscroll-behavior: contain;
     box-sizing: border-box;
 }
 

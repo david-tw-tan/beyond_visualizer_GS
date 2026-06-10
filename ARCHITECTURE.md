@@ -88,10 +88,11 @@ Layer 1 — Waterfall grid
     click tile
 Overview (middle layer) — only if multiple variants and/or collection items
     Single scrollable page; 1-column mobile, 2-column ≥640px
-    Section labels: "Collection", per-piece names, or "Photos"
+    Section labels: per-piece names, "Photos", or collection hero title (see branded titles below)
     All collection_item heroes + all A/B/C variants (no 16-item cap)
     tap any image
 Detail (end layer) — single enlarged image + star (no variant carousel; pick photo in overview)
+    Optional title above image for branded collection heroes (see below)
     Back / Escape / backdrop (from detail) → overview when applicable
     Otherwise close to waterfall
 ```
@@ -101,6 +102,15 @@ Detail (end layer) — single enlarged image + star (no variant carousel; pick p
 - **Variants:** `getItemImageGroup()` — all rows sharing the same base filename (`*_A`, `*_B`, `*_C`…).
 - **Overview anchor** stored in `lightboxOverviewAnchor` for back navigation from detail.
 - **Overview cells** use `object-fit: contain` (full image, not gallery thumb crop).
+
+### Branded collection titles (overview + detail)
+
+For **`img_category === 'collection'`** heroes only (not `collection_item` or `loose_item`), when **`orig_brand_tag`** is non-empty:
+
+- **Overview (layer 2):** the collection hero section heading shows **`[Brand] Inspired Collection`** (from `orig_brand_tag`) instead of the generic **"Collection"**.
+- **Detail (layer 3):** the same title appears above the enlarged image when the opened row is a **collection** hero variant (`_A` / `_B` / `_C`…).
+
+If `orig_brand_tag` is empty, the overview hero section stays **"Collection"** and detail shows **no** collection title. Nested `collection_item` sections keep their product-type labels (e.g. sidetable, sofa); detail for those items has no branded collection title.
 
 ---
 

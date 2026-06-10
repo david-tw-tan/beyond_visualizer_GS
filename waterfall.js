@@ -175,6 +175,38 @@ const scrollToTopBtn     = document.getElementById('scrollToTopBtn');
 const SCROLL_TO_TOP_THRESHOLD = 520;
 let scrollToTopRaf = 0;
 
+let lightboxScrollLockY = 0;
+
+function lockPageScrollForLightbox() {
+    if (document.body.dataset.lightboxScrollLocked === 'true') return;
+    lightboxScrollLockY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.dataset.lightboxScrollLocked = 'true';
+    document.body.classList.add('lightbox-scroll-locked');
+    document.body.style.top = `-${lightboxScrollLockY}px`;
+    document.documentElement.classList.add('lightbox-scroll-locked');
+}
+
+function unlockPageScrollForLightbox() {
+    if (document.body.dataset.lightboxScrollLocked !== 'true') return;
+    document.body.classList.remove('lightbox-scroll-locked');
+    document.body.style.top = '';
+    delete document.body.dataset.lightboxScrollLocked;
+    document.documentElement.classList.remove('lightbox-scroll-locked');
+    window.scrollTo(0, lightboxScrollLockY);
+}
+
+function setLightboxVisible(visible) {
+    if (!lightbox) return;
+    if (visible) {
+        lightbox.style.display = 'flex';
+        lockPageScrollForLightbox();
+    } else {
+        lightbox.style.display = 'none';
+        unlockPageScrollForLightbox();
+    }
+    updateScrollToTopButton();
+}
+
 function isWaterfallScrollContextActive() {
     if (!scrollToTopBtn) return false;
     if (bookmarkView && bookmarkView.style.display === 'block') return false;
@@ -1021,8 +1053,9 @@ function render() {
     emptyState.style.display = 'none';
     gallery.style.removeProperty('display');
 
-    const cards = mixed.map(item => createGalleryCard(item));
     const columnCount = getGalleryColumnCount();
+    const makeCard = makeEagerGalleryCardFactory(columnCount);
+    const cards = mixed.map(item => makeCard(item));
     distributeMasonryCards(gallery, cards, columnCount, { stagger: true });
     lastGalleryLayoutColumns = columnCount;
     setGalleryShowroomNoteVisible(true);
@@ -1097,6 +1130,52 @@ function pickExtremeLandscapeDisplayRatio(imageRatio, stableKey = '') {
     const t = (imageRatio - EXTREME_LANDSCAPE_THRESHOLD) /
         (EXTREME_LANDSCAPE_FULL - EXTREME_LANDSCAPE_THRESHOLD);
     return THUMB_FRAME_5_4 + t * (THUMB_FRAME_3_2 - THUMB_FRAME_5_4);
+}
+
+/** Defer thumb downloads until near viewport (native loading="lazy" still prefetches too aggressively in masonry). */
+const LAZY_THUMB_ROOT_MARGIN = '320px 0px';
+const LAZY_THUMB_EAGER_ROWS = 2;
+let lazyThumbObserver = null;
+
+function getLazyThumbObserver() {
+    if (lazyThumbObserver) return lazyThumbObserver;
+    lazyThumbObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            loadLazyThumb(entry.target);
+        });
+    }, { root: null, rootMargin: LAZY_THUMB_ROOT_MARGIN, threshold: 0.01 });
+    return lazyThumbObserver;
+}
+
+function loadLazyThumb(img) {
+    const src = img.dataset.src;
+    if (!src || img.dataset.thumbLoaded === 'true') return;
+    img.dataset.thumbLoaded = 'true';
+    img.src = src;
+    img.classList.remove('thumb-img--pending');
+    getLazyThumbObserver().unobserve(img);
+}
+
+function initLazyThumb(img, src, options = {}) {
+    img.decoding = 'async';
+    img.dataset.src = src;
+    if (options.eager) {
+        loadLazyThumb(img);
+        return;
+    }
+    img.classList.add('thumb-img--pending');
+    getLazyThumbObserver().observe(img);
+}
+
+function makeEagerGalleryCardFactory(columnCount) {
+    const eagerCount = Math.max(columnCount * LAZY_THUMB_EAGER_ROWS, columnCount);
+    let index = 0;
+    return (item, cardOptions = {}) =>
+        createGalleryCard(item, {
+            ...cardOptions,
+            eager: index++ < eagerCount
+        });
 }
 
 /** Wraps a lazy-loaded thumb <img>; crops only extreme landscape after decode. */
@@ -1267,7 +1346,8 @@ function createGalleryCollectionGroup(title, items, columnCount, options = {}) {
 
     const masonry = document.createElement('div');
     masonry.className = 'gallery-collection-group__masonry masonry-layout';
-    const cards = items.map(item => createGalleryCard(item));
+    const makeCard = makeEagerGalleryCardFactory(columnCount);
+    const cards = items.map(item => makeCard(item));
     distributeMasonryCards(masonry, cards, columnCount, {
         stagger: Boolean(options.stagger)
     });
@@ -1339,8 +1419,9 @@ function renderAccessoriesBrowse() {
     accessoriesEmpty.style.display = 'none';
     accessoriesGallery.style.removeProperty('display');
 
-    const cards = list.map(item => createGalleryCard(item, { fromAccessories: true }));
     const columnCount = getGalleryColumnCount();
+    const makeCard = makeEagerGalleryCardFactory(columnCount);
+    const cards = list.map(item => makeCard(item, { fromAccessories: true }));
     distributeMasonryCards(accessoriesGallery, cards, columnCount);
     lastAccessoriesLayoutColumns = columnCount;
     setGalleryShowroomNoteVisible(true);
@@ -1354,10 +1435,8 @@ function createGalleryCard(item, options = {}) {
     card.dataset.thumbUrl = hero.thumbnail_url;
 
     const img = document.createElement('img');
-    img.src = item.thumbnail_url;
     img.alt = item.filename_raw || 'Furniture';
-    img.loading = 'lazy';
-    img.decoding = 'async';
+    initLazyThumb(img, item.thumbnail_url, { eager: options.eager });
 
     const star = document.createElement('div');
     star.className = 'star-thumb';
@@ -1548,10 +1627,8 @@ function renderLightboxOverview(anchor) {
             btn.setAttribute('aria-label', imgItem.filename_raw || 'View photo');
 
             const img = document.createElement('img');
-            img.src = imgItem.thumbnail_url;
             img.alt = imgItem.filename_raw || 'Furniture';
-            img.loading = 'lazy';
-            img.decoding = 'async';
+            initLazyThumb(img, imgItem.thumbnail_url);
 
             btn.appendChild(img);
             btn.addEventListener('click', (e) => {
@@ -1612,8 +1689,7 @@ function openLightboxOverview(anchor, opts) {
     applyLightboxOverviewLayout();
 
     lightboxBackBtn.style.display = 'flex';
-    lightbox.style.display = 'flex';
-    updateScrollToTopButton();
+    setLightboxVisible(true);
 }
 
 function updateLightboxDetailTitle(item) {
@@ -1671,8 +1747,7 @@ function openLightboxDetail(item, options = {}) {
     lightboxBackBtn.style.display = 'flex';
 
     showLightboxDetailImage(item);
-    lightbox.style.display = 'flex';
-    updateScrollToTopButton();
+    setLightboxVisible(true);
 }
 
 function openLightbox(item, options = {}) {
@@ -1722,7 +1797,7 @@ function closeLightbox() {
         }
     }
 
-    lightbox.style.display = 'none';
+    setLightboxVisible(false);
     currentLightboxItem = null;
     lightboxMode = null;
     lightboxOverviewAnchor = null;
@@ -1731,7 +1806,6 @@ function closeLightbox() {
     lightboxCloseBtn.style.display = 'none';
     lightboxBackBtn.style.display = 'none';
     applyLightboxOverviewLayout();
-    updateScrollToTopButton();
 
     if (bookmarkView.style.display === 'block') {
         renderBookmarkView();
@@ -1745,7 +1819,7 @@ function dismissLightbox() {
         closeLightbox();
         return;
     }
-    lightbox.style.display = 'none';
+    setLightboxVisible(false);
     currentLightboxItem = null;
     lightboxMode = null;
     lightboxOverviewAnchor = null;
@@ -1754,7 +1828,6 @@ function dismissLightbox() {
     lightboxCloseBtn.style.display = 'none';
     lightboxBackBtn.style.display = 'none';
     applyLightboxOverviewLayout();
-    updateScrollToTopButton();
 }
 
 function updateLightboxStar() {
@@ -1803,6 +1876,12 @@ lightboxBackBtn.addEventListener('click', (e) => {
     }
     dismissLightbox();
 });
+
+lightbox.addEventListener('touchmove', (e) => {
+    if (lightbox.style.display !== 'flex') return;
+    if (e.target.closest('.lightbox-overview-scroll')) return;
+    e.preventDefault();
+}, { passive: false });
 
 lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) {
@@ -2266,7 +2345,7 @@ function getBookmarkCardCaption(item, role) {
     return item.filename_raw || '';
 }
 
-function createBookmarkCard(item, { starred, linked, role }) {
+function createBookmarkCard(item, { starred, linked, role, eager = false }) {
     const hero = toHeroItem(item);
     const el = document.createElement('div');
     el.className = 'bookmark-card';
@@ -2290,10 +2369,8 @@ function createBookmarkCard(item, { starred, linked, role }) {
     });
 
     const img = document.createElement('img');
-    img.src = hero.thumbnail_url;
     img.alt = hero.filename_raw || 'Furniture';
-    img.loading = 'lazy';
-    img.decoding = 'async';
+    initLazyThumb(img, hero.thumbnail_url, { eager: options.eager });
 
     const caption = document.createElement('div');
     caption.className = 'bookmark-card-caption';
