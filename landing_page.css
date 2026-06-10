@@ -331,7 +331,7 @@ a {
 .lp-hero__copy {
     position: relative;
     overflow: hidden;
-    padding-block: 1.35rem 1.75rem;
+    padding-block: 1.5rem 2rem;
     background: var(--color-surface-warm);
     border-bottom: 1px solid var(--color-hairline);
 }
@@ -347,33 +347,33 @@ a {
 }
 
 .lp-hero__title {
-    margin: 0 0 0.85rem;
+    margin: 0 0 1rem;
     max-width: min(38rem, 100%);
     font-family: var(--font-display);
-    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-size: clamp(2.15rem, 6.75vw, 3.65rem);
     font-weight: 500;
-    line-height: 1.06;
+    line-height: 1.08;
     letter-spacing: 0.01em;
     text-wrap: balance;
 }
 
 .lp-hero__lede {
-    margin: 0 0 1.35rem;
+    margin: 0 0 1.65rem;
     max-width: clamp(22rem, 55vw, 36rem);
 }
 
 .lp-hero__hook {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(1.18rem, 3.1vw, 1.4rem);
+    font-size: clamp(1.26rem, 3.35vw, 1.46rem);
     font-weight: 500;
     font-style: normal;
-    line-height: 1.44;
+    line-height: 1.38;
     color: var(--color-ink-muted);
 }
 
 .lp-hero__scope {
-    margin: 0.7rem 0 0;
+    margin: 0.75rem 0 0;
     font-family: var(--font-body);
     font-size: clamp(0.92rem, 2.15vw, 1.02rem);
     font-weight: 500;
@@ -420,17 +420,26 @@ a {
     }
 
     .lp-hero__title {
-        font-size: clamp(2.2rem, 8.25vw, 2.85rem);
-        line-height: 1.06;
+        font-size: clamp(2.1rem, 7.75vw, 2.65rem);
+        line-height: 1.08;
         margin-bottom: 0.9rem;
     }
 
+    .lp-hero__lede {
+        max-width: none;
+    }
+
     .lp-hero__hook {
-        font-size: clamp(1.15rem, 3.25vw, 1.3rem);
+        font-size: clamp(1.22rem, 3.55vw, 1.36rem);
+        text-wrap: balance;
+    }
+
+    .lp-hero__lede {
+        margin-bottom: 1.55rem;
     }
 
     .lp-hero__scope {
-        margin-top: 0.65rem;
+        margin-top: 0.7rem;
         font-size: clamp(0.9rem, 2.2vw, 0.98rem);
     }
 }
@@ -477,12 +486,16 @@ a {
     }
 
     .lp-hero__hook {
-        font-size: 1.52rem;
-        line-height: 1.4;
+        font-size: 1.46rem;
+        line-height: 1.38;
+    }
+
+    .lp-hero__lede {
+        margin-bottom: 1.75rem;
     }
 
     .lp-hero__scope {
-        margin-top: 0.75rem;
+        margin-top: 0.85rem;
         font-size: 1.02rem;
         line-height: 1.45;
     }
