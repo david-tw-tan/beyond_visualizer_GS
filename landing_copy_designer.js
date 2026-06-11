@@ -22,7 +22,8 @@ const LANDING_COPY_DESIGNER = {
     'approach.p4': '',
     'approach.toolLink': 'Browse Curated Interiors',
 
-    'process.step1.title': 'Share Your Direction',
+    'process.step1.title': 'Share Your Style',
+    'process.step2.title': 'Choose & Refine an Interior',
     'process.step1.body':
         'Share your photos, floor plans, and inspirations. <span class="lp-step__assurance">Free discovery call. See if we\u2019re the right fit.</span>',
     'process.step2.body':
