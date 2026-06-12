@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing_page.css?v=persona-5">
+    <link rel="stylesheet" href="landing_page.css?v=persona-14">
     <script defer src="landing_image_captions.js?v=6"></script>
-    <script defer src="landing_factory_partners.js?v=1"></script>
-    <script defer src="landing_copy_designer.js?v=30"></script>
-    <script defer src="landing_page.js?v=persona-6"></script>
+    <script defer src="landing_factory_partners.js?v=2"></script>
+    <script defer src="landing_copy_designer.js?v=32"></script>
+    <script defer src="landing_page.js?v=persona-13"></script>
 </head>
 <body>
 
@@ -25,6 +25,7 @@
                 <a href="#approach" data-nav="approach">Our Approach</a>
                 <a href="#process" data-nav="process">How It Works</a>
                 <a href="#why-us" data-nav="why-us">Why Us</a>
+                <a href="#homes" data-nav="homes">Homes</a>
             </nav>
         </div>
     </div>
@@ -149,25 +150,180 @@
                         <li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Trusted factory partner network</span> — thousands of large home projects completed worldwide</span></li>
                     </ul>
                 </div>
-                <figure class="lp-execution-visual">
-                    <button type="button" class="lp-spotlight-trigger lp-execution-visual__trigger" data-open-partners aria-label="Explore our factory partners">
-                        <img
-                            class="lp-execution-visual__img"
-                            src="html_images/factory_3.jpg"
-                            alt="Modern partner manufacturing campus in Foshan"
-                            width="1200"
-                            height="750"
-                            loading="lazy"
+                <div class="lp-execution-column">
+                    <figure class="lp-execution-visual">
+                        <button type="button" class="lp-spotlight-trigger lp-execution-visual__trigger" data-open-partners aria-label="Explore our factory partners">
+                            <img
+                                class="lp-execution-visual__img"
+                                src="html_images/factory_3.jpg"
+                                alt="Modern partner manufacturing campus in Foshan"
+                                width="1200"
+                                height="750"
+                                loading="lazy"
+                            >
+                            <span class="lp-spotlight-trigger__hint" aria-hidden="true">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                            </span>
+                        </button>
+                        <figcaption class="lp-execution-visual__footer">
+                            <p class="lp-execution-visual__caption" data-copy="factory.caption">Curated network of Foshan's leading premium furniture factories.</p>
+                            <button type="button" class="lp-tool-link lp-execution-visual__link" data-open-partners>Explore our factories</button>
+                        </figcaption>
+                    </figure>
+
+                    <div class="lp-doc-teaser">
+                        <a
+                            id="documentaryLink"
+                            class="lp-doc-teaser__link"
+                            href="#youtube-series"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Our 3-part Foshan docu-series on YouTube — where it all started (opens in new tab)"
                         >
-                        <span class="lp-spotlight-trigger__hint" aria-hidden="true">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
-                        </span>
-                    </button>
-                    <figcaption class="lp-execution-visual__footer">
-                        <p class="lp-execution-visual__caption" data-copy="factory.caption">Curated network of Foshan's leading premium furniture factories.</p>
-                        <button type="button" class="lp-tool-link lp-execution-visual__link" data-open-partners>Explore our factories</button>
-                    </figcaption>
-                </figure>
+                            <img
+                                class="lp-doc-teaser__thumb"
+                                src="html_images/img_journal_doc.jpeg"
+                                alt="Hand-cutting leather on a partner factory floor in Foshan"
+                                width="360"
+                                height="202"
+                                loading="lazy"
+                            >
+                            <span class="lp-doc-teaser__copy">
+                                <span class="lp-doc-teaser__label">Where it all started</span>
+                                <span class="lp-doc-teaser__text">Watch our 3-part Foshan docu-series on YouTube</span>
+                            </span>
+                            <svg class="lp-doc-teaser__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case studies -->
+    <section id="homes" class="lp-section lp-case-studies" data-section="homes">
+        <div class="lp-container">
+            <div class="lp-case-studies__header lp-reveal">
+                <span class="lp-eyebrow">Success Stories</span>
+                <h2 class="lp-section-title">Real Furnished Homes</h2>
+                <p class="lp-lead lp-case-studies__intro">
+                    Showrooms show what's possible. These are actual finished homes — furnished and delivered in full.
+                </p>
+            </div>
+
+            <div class="lp-case-carousel lp-reveal" data-case-carousel aria-roledescription="carousel" tabindex="0">
+                <div class="lp-case-carousel__frame">
+                    <div class="lp-case-carousel__media">
+                        <div class="lp-case-carousel__viewport">
+                            <div class="lp-case-carousel__track" data-case-track>
+                                <article class="lp-case-carousel__slide" data-case-slide aria-roledescription="slide">
+                                    <figure class="lp-case-carousel__figure">
+                                        <img
+                                            class="lp-case-carousel__img"
+                                            src="html_images/case_study_1.jpg"
+                                            alt="Double-height luxury living room with terracotta modular seating"
+                                            width="1400"
+                                            height="875"
+                                            loading="lazy"
+                                        >
+                                    </figure>
+                                </article>
+
+                                <article class="lp-case-carousel__slide" data-case-slide aria-roledescription="slide">
+                                    <figure class="lp-case-carousel__figure">
+                                        <img
+                                            class="lp-case-carousel__img"
+                                            src="html_images/case_study_2.jpg"
+                                            alt="Symmetrical living room with mountain views and cream upholstery"
+                                            width="1400"
+                                            height="875"
+                                            loading="lazy"
+                                        >
+                                    </figure>
+                                </article>
+
+                                <article class="lp-case-carousel__slide" data-case-slide aria-roledescription="slide">
+                                    <figure class="lp-case-carousel__figure">
+                                        <img
+                                            class="lp-case-carousel__img"
+                                            src="html_images/case_study_3.jpg"
+                                            alt="Bright Mediterranean villa living room with sectional sofa"
+                                            width="1400"
+                                            height="875"
+                                            loading="lazy"
+                                        >
+                                    </figure>
+                                </article>
+
+                                <article class="lp-case-carousel__slide" data-case-slide aria-roledescription="slide">
+                                    <figure class="lp-case-carousel__figure">
+                                        <img
+                                            class="lp-case-carousel__img"
+                                            src="html_images/case_study_4.jpg"
+                                            alt="Family great room with neutral sectional and fireplace"
+                                            width="1400"
+                                            height="875"
+                                            loading="lazy"
+                                        >
+                                    </figure>
+                                </article>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="lp-case-carousel__nav lp-case-carousel__nav--prev"
+                            data-case-prev
+                            aria-label="Previous home"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <button
+                            type="button"
+                            class="lp-case-carousel__nav lp-case-carousel__nav--next"
+                            data-case-next
+                            aria-label="Next home"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="lp-case-carousel__caption-panel">
+                        <article class="lp-case-carousel__caption" data-case-caption>
+                            <span class="lp-case-carousel__label">Luxury high-rise</span>
+                            <h3 class="lp-case-carousel__title">Editorial penthouse living</h3>
+                            <p class="lp-case-carousel__desc">
+                                Full main-level living from partner factories — modular seating, statement lighting, and layered textiles built as one cohesive scheme. The caliber our network delivers at scale.
+                            </p>
+                        </article>
+                        <article class="lp-case-carousel__caption" data-case-caption hidden>
+                            <span class="lp-case-carousel__label">Mountain retreat</span>
+                            <h3 class="lp-case-carousel__title">Calm symmetry for a large open plan</h3>
+                            <p class="lp-case-carousel__desc">
+                                Twin sofas, accent seating, and built-in bar cabinetry from manufacturers who specialize in large entertaining spaces. A coordinated palette across a full footprint — routine for our partners.
+                            </p>
+                        </article>
+                        <article class="lp-case-carousel__caption" data-case-caption hidden>
+                            <span class="lp-case-carousel__label">Coastal villa</span>
+                            <h3 class="lp-case-carousel__title">Indoor-outdoor living at scale</h3>
+                            <p class="lp-case-carousel__desc">
+                                Oversized sectional, dining, and display pieces tailored to architecture and layout — including custom sizing where rooms demand it. Typical output from export-grade factories in our network.
+                            </p>
+                        </article>
+                        <article class="lp-case-carousel__caption" data-case-caption hidden>
+                            <span class="lp-case-carousel__label">Family estate</span>
+                            <h3 class="lp-case-carousel__title">A great room everyone actually uses</h3>
+                            <p class="lp-case-carousel__desc">
+                                Sectional, swivel chairs, and performance fabrics built for daily life — designer-level finishing from partners who've completed thousands of whole-home projects worldwide.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="lp-case-carousel__footer">
+                    <div class="lp-case-carousel__dots" data-case-dots role="tablist" aria-label="Select home"></div>
+                    <p class="lp-case-carousel__counter" data-case-counter aria-live="polite">1 of 4</p>
+                </div>
             </div>
         </div>
     </section>
@@ -309,38 +465,8 @@
         <button type="button" class="lp-modal__close" data-close-partners aria-label="Close">&times;</button>
         <span class="lp-eyebrow">Our network</span>
         <h2 id="partnersModalTitle" class="lp-modal__title">Factory partners</h2>
-        <p class="lp-modal__lead">A curated network of <span class="lp-lead__emphasis">over 25 export-grade furniture manufacturers</span> — vetted for quality, scale, and large-home project experience.</p>
-        <p class="lp-modal__lead">We've provided 3 representative partners below.</p>
+        <p class="lp-modal__lead">We have a curated network of <span class="lp-lead__emphasis">over 25 export-grade manufacturers</span>, vetted for quality, scale, and large-home projects. Representative partners are provided below.</p>
         <div id="partnersList" class="lp-partners-list" aria-live="polite"></div>
-    </div>
-</div>
-
-<!-- Persona welcome overlay (first visit) -->
-<div id="welcomeOverlay" class="lp-welcome" hidden>
-    <div class="lp-welcome__backdrop" aria-hidden="true"></div>
-    <div class="lp-welcome__panel" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-        <p class="lp-welcome__brand">Beyond Showrooms</p>
-        <h2 id="welcomeTitle" class="lp-welcome__title">What brings you here?</h2>
-        <div class="lp-welcome__choices">
-            <button
-                type="button"
-                class="lp-btn lp-welcome__choice"
-                data-welcome-persona="confidence"
-                aria-label="Furnishing a large home — want less anxiety"
-            >
-                <span class="lp-welcome__choice-label">Furnishing a large home</span>
-                <span class="lp-welcome__choice-hint">(want less anxiety)</span>
-            </button>
-            <button
-                type="button"
-                class="lp-btn lp-welcome__choice"
-                data-welcome-persona="designer"
-                aria-label="Want a designer look for my house — without steep markups"
-            >
-                <span class="lp-welcome__choice-label">Want a designer look for my house</span>
-                <span class="lp-welcome__choice-hint">(without steep markups)</span>
-            </button>
-        </div>
     </div>
 </div>
 

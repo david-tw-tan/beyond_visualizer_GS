@@ -31,7 +31,7 @@ const LANDING_COPY_DESIGNER = {
 
     'whyUs.list':
         '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Curated whole-room designs</span> inspired by leading global interiors — a coordinated home, not a collection of expensive one-offs</span></li>' +
-        '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Build to order</span> — custom sizes, materials, and finishes tailored to your space, not showroom stock</span></li>' +
+        '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Build to order furniture</span> — custom sizes and materials available, not showroom stock</span></li>' +
         '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Direct factory sourcing</span> — access more designer options, without the luxury markup</span></li>' +
         '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">We handle everything</span>, from concept to delivery</span></li>' +
         '<li><span class="lp-benefit-check" aria-hidden="true"></span><span class="lp-benefit-text"><span class="lp-lead__emphasis">Trusted factory partner network</span> — thousands of large home projects completed worldwide</span></li>',

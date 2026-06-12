@@ -5,14 +5,14 @@
 const LANDING_CONFIG = {
     discoveryCallUrl: '#book-call',
     whatsAppUrl: 'https://wa.me/',
-    emailUrl: 'mailto:hello@beyondshowrooms.com'
+    emailUrl: 'mailto:hello@beyondshowrooms.com',
+    /** YouTube playlist or channel — update when the series is published */
+    youtubeSeriesUrl: '#youtube-series'
 };
 
-const PERSONA_STORAGE_KEY = 'bs_persona';
 const PERSONA_PARAM = 'persona';
 const VALID_PERSONAS = ['confidence', 'designer'];
 
-const welcomeOverlay = document.getElementById('welcomeOverlay');
 const copySnapshot = new Map();
 let activePersona = 'confidence';
 
@@ -119,7 +119,11 @@ function syncPersonaVisibility() {
 
 function updatePersonaUrl(persona) {
     const url = new URL(window.location.href);
-    url.searchParams.set(PERSONA_PARAM, persona);
+    if (persona === 'designer') {
+        url.searchParams.set(PERSONA_PARAM, persona);
+    } else {
+        url.searchParams.delete(PERSONA_PARAM);
+    }
     window.history.replaceState(null, '', url);
 }
 
@@ -135,7 +139,6 @@ function applyPersona(persona, { scrollToHero = false } = {}) {
     }
 
     syncPersonaVisibility();
-    localStorage.setItem(PERSONA_STORAGE_KEY, persona);
     updatePersonaUrl(persona);
 
     if (scrollToHero) {
@@ -143,65 +146,31 @@ function applyPersona(persona, { scrollToHero = false } = {}) {
     }
 }
 
-function showWelcomeOverlay() {
-    if (!welcomeOverlay) return;
-    welcomeOverlay.hidden = false;
-    document.body.classList.add('lp-welcome-open');
-    syncModalBodyLock();
-}
-
-function hideWelcomeOverlay() {
-    if (!welcomeOverlay) return;
-    welcomeOverlay.hidden = true;
-    document.body.classList.remove('lp-welcome-open');
-    syncModalBodyLock();
-}
-
-function initWelcomeOverlay() {
-    welcomeOverlay?.querySelectorAll('[data-welcome-persona]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const persona = btn.dataset.welcomePersona;
-            if (!VALID_PERSONAS.includes(persona)) return;
-            applyPersona(persona);
-            hideWelcomeOverlay();
-        });
-    });
-}
-
 function initPersonaReset() {
-    document.querySelector('[data-reset-persona]')?.addEventListener('click', resetWelcomeSelector);
+    document.querySelector('[data-reset-persona]')?.addEventListener('click', resetPersona);
 }
 
-/** Dev — clears persona storage and re-opens welcome overlay */
-function resetWelcomeSelector() {
-    localStorage.removeItem(PERSONA_STORAGE_KEY);
-    const url = new URL(window.location.href);
-    url.searchParams.delete(PERSONA_PARAM);
-    window.history.replaceState(null, '', url);
-    restoreConfidenceCopy();
-    activePersona = 'confidence';
-    syncPersonaVisibility();
-    showWelcomeOverlay();
-    window.scrollTo({ top: 0, behavior: 'auto' });
+/** Footer — return to default V1 copy and strip campaign persona from URL */
+function resetPersona() {
+    applyPersona('confidence', { scrollToHero: true });
 }
 
 function initPersona() {
     snapshotCopyDefaults();
 
     const urlPersona = getPersonaFromUrl();
-    const storedPersona = localStorage.getItem(PERSONA_STORAGE_KEY);
-    const resolved = urlPersona || (VALID_PERSONAS.includes(storedPersona) ? storedPersona : null);
 
-    if (resolved) {
-        applyPersona(resolved);
-        hideWelcomeOverlay();
+    if (urlPersona === 'designer') {
+        applyPersona('designer');
     } else {
         activePersona = 'confidence';
         syncPersonaVisibility();
-        showWelcomeOverlay();
+
+        if (urlPersona === 'confidence') {
+            updatePersonaUrl('confidence');
+        }
     }
 
-    initWelcomeOverlay();
     initPersonaReset();
 }
 
@@ -283,6 +252,9 @@ function applyContactLinks() {
         whatsapp.setAttribute('rel', 'noopener noreferrer');
     }
     if (email) email.setAttribute('href', LANDING_CONFIG.emailUrl);
+
+    const documentary = document.getElementById('documentaryLink');
+    if (documentary) documentary.setAttribute('href', LANDING_CONFIG.youtubeSeriesUrl);
 }
 
 function updateHeader() {
@@ -291,9 +263,7 @@ function updateHeader() {
 }
 
 function syncModalBodyLock() {
-    const welcomeOpen = welcomeOverlay && !welcomeOverlay.hidden;
     const anyOpen =
-        welcomeOpen ||
         (contactModal && !contactModal.hidden) ||
         (spotlightModal && !spotlightModal.hidden) ||
         (showroomModal && !showroomModal.hidden) ||
@@ -375,13 +345,23 @@ function createPartnerCard(partner) {
     const img = document.createElement('img');
     img.className = 'lp-partner-card__img';
     img.src = partner.image;
-    img.alt = `Export-grade manufacturer in ${partner.location}`;
+    img.alt = `${partner.companyName}, ${partner.location}`;
     img.loading = 'lazy';
     img.decoding = 'async';
 
-    const location = document.createElement('h3');
-    location.className = 'lp-partner-card__name';
+    const header = document.createElement('div');
+    header.className = 'lp-partner-card__header';
+
+    const companyName = document.createElement('h3');
+    companyName.className = 'lp-partner-card__name';
+    companyName.textContent = partner.companyName;
+
+    const location = document.createElement('p');
+    location.className = 'lp-partner-card__location';
     location.textContent = partner.location;
+
+    header.appendChild(companyName);
+    header.appendChild(location);
 
     const stats = document.createElement('dl');
     stats.className = 'lp-partner-card__stats';
@@ -397,7 +377,7 @@ function createPartnerCard(partner) {
     specialty.textContent = partner.specialty;
 
     card.appendChild(img);
-    card.appendChild(location);
+    card.appendChild(header);
     card.appendChild(stats);
     card.appendChild(specialty);
 
@@ -422,7 +402,7 @@ function renderPartnersList() {
 
     const footerText = document.createElement('p');
     footerText.className = 'lp-partners-list__footer-text';
-    footerText.textContent = '25+ partners in our network';
+    footerText.textContent = '25+ premium factories in our network';
 
     footer.appendChild(watermark);
     footer.appendChild(footerText);
@@ -901,7 +881,100 @@ function initNavHighlight() {
     sections.forEach((section) => observer.observe(section));
 }
 
+function initCaseStudyCarousel() {
+    const carousel = document.querySelector('[data-case-carousel]');
+    if (!carousel) return;
+
+    const track = carousel.querySelector('[data-case-track]');
+    const slides = [...carousel.querySelectorAll('[data-case-slide]')];
+    const captions = [...carousel.querySelectorAll('[data-case-caption]')];
+    const prevBtn = carousel.querySelector('[data-case-prev]');
+    const nextBtn = carousel.querySelector('[data-case-next]');
+    const dotsContainer = carousel.querySelector('[data-case-dots]');
+    const counter = carousel.querySelector('[data-case-counter]');
+    const viewport = carousel.querySelector('.lp-case-carousel__viewport');
+
+    if (!track || slides.length === 0) return;
+
+    let index = 0;
+    let touchStartX = 0;
+
+    slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'lp-case-carousel__dot';
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', `Home ${i + 1}`);
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer?.appendChild(dot);
+    });
+
+    const dots = [...dotsContainer?.querySelectorAll('.lp-case-carousel__dot') ?? []];
+
+    function goTo(nextIndex) {
+        index = (nextIndex + slides.length) % slides.length;
+
+        track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+
+        slides.forEach((slide, i) => {
+            slide.setAttribute('aria-hidden', i !== index ? 'true' : 'false');
+        });
+
+        captions.forEach((caption, i) => {
+            caption.hidden = i !== index;
+        });
+
+        dots.forEach((dot, i) => {
+            const isActive = i === index;
+            dot.classList.toggle('is-active', isActive);
+            dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        if (counter) {
+            counter.textContent = `${index + 1} of ${slides.length}`;
+        }
+    }
+
+    prevBtn?.addEventListener('click', () => goTo(index - 1));
+    nextBtn?.addEventListener('click', () => goTo(index + 1));
+
+    carousel.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            goTo(index - 1);
+        } else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            goTo(index + 1);
+        }
+    });
+
+    viewport?.addEventListener(
+        'touchstart',
+        (event) => {
+            touchStartX = event.changedTouches[0]?.screenX ?? 0;
+        },
+        { passive: true }
+    );
+
+    viewport?.addEventListener(
+        'touchend',
+        (event) => {
+            const touchEndX = event.changedTouches[0]?.screenX ?? 0;
+            const delta = touchEndX - touchStartX;
+
+            if (Math.abs(delta) < 40) return;
+
+            if (delta < 0) goTo(index + 1);
+            else goTo(index - 1);
+        },
+        { passive: true }
+    );
+
+    goTo(0);
+}
+
 initPersona();
+initCaseStudyCarousel();
 applyContactLinks();
 initContactModal();
 initSpotlightModal();

@@ -1,13 +1,14 @@
 /**
  * Factory partner profiles — placeholder copy for landing page partners modal.
  * `name` is for internal reference only (not shown in the modal).
- * Update stats, locations, and images here when real partner details are confirmed.
+ * Update stats and images here when real partner details are confirmed.
  */
 const FACTORY_PARTNERS = [
     {
-        id: 'meridian',
-        name: 'Meridian Home Furnishings',
-        location: 'Shunde, Foshan',
+        id: 'jujiami',
+        name: 'Ju Jia Mei',
+        companyName: 'Ju Jia Mei Furniture Co., Ltd.',
+        location: 'Lecong, Foshan',
         image: 'html_images/factory_3.jpg',
         established: '2008',
         productionArea: '42,000 m²',
@@ -18,9 +19,10 @@ const FACTORY_PARTNERS = [
         exportMarkets: 'North America, Middle East, Southeast Asia'
     },
     {
-        id: 'lianfeng',
-        name: 'Lianfeng Woodcraft & Interiors',
-        location: 'Nanhai, Foshan',
+        id: 'woshi',
+        name: 'Wo Shi',
+        companyName: 'Wo Shi Furniture Factory Co., Ltd.',
+        location: 'Longjiang, Foshan',
         image: 'html_images/factory_1.jpg',
         established: '2003',
         productionArea: '68,000 m²',
@@ -31,8 +33,9 @@ const FACTORY_PARTNERS = [
         exportMarkets: 'Europe, Australia, China domestic luxury developments'
     },
     {
-        id: 'artisan',
-        name: 'Artisan Loft Manufacturing',
+        id: 'meiliya',
+        name: 'MeiLiYa',
+        companyName: 'MeiLiYa Furniture Co., Ltd.',
         location: 'Longjiang, Foshan',
         image: 'html_images/factory_4.jpg',
         established: '2012',
