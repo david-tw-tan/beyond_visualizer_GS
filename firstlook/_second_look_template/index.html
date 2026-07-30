@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="description" content="Private Second Look for Matt's Little Rock Home — Beyond Showrooms">
-    <title>Second Look — Matt's Little Rock Home | Beyond Showrooms</title>
+    <!-- ▼ Update title + description for the client -->
+    <meta name="description" content="Private Second Look for [Client]'s [City] Home — Beyond Showrooms">
+    <title>Second Look — [Client]'s [City] Home | Beyond Showrooms</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -16,7 +17,12 @@
 
     <!--
       ═══════════════════════════════════════════════════════════
-      HEADER — personalize via intro greeting + <title> / meta
+      SECOND LOOK TEMPLATE
+      Duplicate this folder → rename to {firstname}_{4charSuffix}_2
+      (sibling of the First Look folder).
+      Then edit: title/meta, date, greeting, versions links,
+      FIRST_LOOK_CONFIG, images, brochure PDFs.
+      Do not deploy this _template folder itself.
       ═══════════════════════════════════════════════════════════
     -->
     <header class="fl-header">
@@ -24,21 +30,19 @@
         <h1 class="fl-header__title">Second Look</h1>
         <p class="fl-header__subtitle">Building on Your First Look</p>
         <!-- ▼ Update this date whenever you send or revise the proposal -->
-        <p class="fl-header__date">30 July 2026</p>
+        <p class="fl-header__date">[DD Month YYYY]</p>
         <!--
           ═══════════════════════════════════════════════════════════
           VERSIONS — keep ONE pattern active; comment out the rest.
-          1 look  → omit this block entirely
-          2 looks → inline switcher (default below)
-          3+ looks → compact menu (details/summary)
+          Second Look usually has at least 2 looks → use the switcher.
           ═══════════════════════════════════════════════════════════
         -->
 
         <!-- 1 look only: delete / comment out the entire versions block -->
 
-        <!-- 2 looks: inline switcher -->
+        <!-- 2 looks: inline switcher (default for Second Look) -->
         <nav class="fl-versions" aria-label="Document versions">
-            <a class="fl-versions__link" href="../matt_12sQ/">First Look</a>
+            <a class="fl-versions__link" href="../CLIENT_FOLDER/">First Look</a>
             <span class="fl-versions__sep" aria-hidden="true">·</span>
             <a class="fl-versions__link is-current" href="./" aria-current="page">Second Look</a>
         </nav>
@@ -48,24 +52,21 @@
         <details class="fl-versions fl-versions--menu">
             <summary class="fl-versions__summary">Second Look</summary>
             <div class="fl-versions__panel" role="list">
-                <a class="fl-versions__link" href="../matt_12sQ/">First Look — 15 Jul 2026</a>
-                <a class="fl-versions__link is-current" href="./" aria-current="page">Second Look — 30 Jul 2026</a>
-                <a class="fl-versions__link" href="../CLIENT_LOOK_3/">Third Look — DATE</a>
+                <a class="fl-versions__link" href="../CLIENT_FOLDER/">First Look — DATE</a>
+                <a class="fl-versions__link is-current" href="./" aria-current="page">Second Look — DATE</a>
+                <a class="fl-versions__link" href="../CLIENT_FOLDER_3/">Third Look — DATE</a>
             </div>
         </details>
         -->
         <hr class="fl-header__rule">
     </header>
 
-    <!-- ▼ Edit client name in the greeting below -->
+    <!-- ▼ Edit client name + focus areas in the greeting below -->
     <p class="fl-intro">
-        <strong>Hi Matt</strong> — here are some new additions based on your feedback. For now, we've focused on the larger anchor pieces — living room recliners, dining options, and a Hermès-inspired bed — to see if these feel closer. I've also included factory brochures where helpful, so you can see the range and customization available. Let me know what you think once you've had a look.
+        <strong>Hi [Name]</strong> — here are some new additions based on your feedback. For now, we've focused on the larger anchor pieces — [focus areas] — to see if these feel closer. I've also included factory brochures where helpful, so you can see the range and customization available. Let me know what you think once you've had a look.
     </p>
 
-    <!-- Sticky room jump links (built from FIRST_LOOK_CONFIG.rooms) -->
     <nav id="fl-room-nav" class="fl-room-nav" aria-label="Rooms" hidden></nav>
-
-    <!-- Room galleries (built from FIRST_LOOK_CONFIG) -->
     <div id="fl-rooms" class="fl-rooms"></div>
 
     <aside class="fl-sourcing" aria-label="A note on these pieces">
@@ -156,18 +157,18 @@
 
 <!--
   ════════════════════════════════════════════════════════════════
-  // SWAP IMAGES HERE
-  This is the only section that needs editing when swapping photos
-  for a client (plus the intro greeting, <title>, and room titles).
+  FIRST_LOOK_CONFIG — rooms, images, captions, brochures
+  Drop image + brochure PDF files into THIS folder next to index.html.
+  After adding photos:  python3 ../resize_images.py
+  After adding large PDFs:  python3 ../compress_pdfs.py
 
-  Image files live in THIS folder next to index.html.
-
-  After dropping new photos, run from firstlook/matt_12sQ/:
-    python3 resize_images.py
-  (or copy that script here and run it)
-
-  Caption format: [Material] — [one distinguishing detail]
+  Caption format: Caption — material and one distinguishing detail
   Never use the word "replica". Prefer "designer-inspired".
+
+  Brochure patterns:
+    intro: "… see this {{brochure}} for more options."
+    brochure:  { label: 'factory brochure', href: 'brochure_x.pdf', cta: 'Brochure: …' }
+    brochures: [ { href, cta }, { href, cta } ]   // multiple end-of-section CTAs
   ════════════════════════════════════════════════════════════════
 -->
 <script>
@@ -176,63 +177,46 @@ window.FIRST_LOOK_CONFIG = {
         {
             id: 'living-room',
             title: 'Living Room',
-            intro: "We've reached out to a recliner-sofa specialist factory. They have a wide selection, and pieces can be customized — see this {{brochure}} for more options.",
+            intro: "We've reached out to a specialist factory for these pieces. Wide selection, and pieces can be customized — see this {{brochure}} for more options.",
             brochure: {
                 label: 'factory brochure',
-                href: 'brochure_recliners.pdf',
-                cta: 'Brochure: Extended Recliner Sofa Options'
+                href: 'brochure_example.pdf',
+                cta: 'Brochure: Extended Options'
             },
             images: [
-                { src: 'recliner_1.jpg', caption: 'Cream leather recliner — Minotti-inspired, adjustable headrests.', alt: 'Cream leather Minotti-inspired recliner sofa with adjustable headrests' },
-                { src: 'recliner_2.jpg', caption: 'Taupe leather recliner — slim black legs, quiet lines.', alt: 'Taupe leather Minotti-inspired recliner sofa' },
-                { src: 'recliner_3.jpg', caption: 'Grey leather recliner — Minotti-inspired, channel back.', alt: 'Grey leather Minotti-inspired recliner with channel-stitched back' },
-                { src: 'recliner_4.jpg', caption: 'Light grey recliner set — brass arm trim, quilted sides.', alt: 'Light grey Minotti-inspired recliner set with brass arm accents' },
-                { src: 'recliner_5.jpg', caption: 'Taupe sectional recliner — chaise end, low profile.', alt: 'Taupe Minotti-inspired sectional recliner with chaise' }
+                { src: 'living_room_1.jpg', caption: 'Caption — material and one distinguishing detail.', alt: 'Living room piece preview' },
+                { src: 'living_room_2.jpg', caption: 'Caption — material and one distinguishing detail.', alt: 'Living room piece preview' }
             ]
         },
         {
             id: 'dining-room',
             title: 'Dining Room',
-            intro: "We've selected a few sample tables below with marble finishes — tell us what you think. Matching dining chairs come in both minimalist and more elaborate leather upholstery. See {{brochure}} for more chair options.",
+            intro: "We've selected a few sample pieces below — tell us what you think. See {{brochure}} for more options.",
             brochure: {
                 label: 'brochure',
-                href: 'brochure_dining_chairs.pdf',
-                cta: 'Brochure: Extended Dining Chair Options'
+                href: 'brochure_dining_example.pdf',
+                cta: 'Brochure: Extended Dining Options'
             },
             images: [
-                { src: 'dining_table_1.jpg', caption: 'Dark burl dining table — quilted leather chairs.', alt: 'Dark burl dining table with quilted leather chairs' },
-                { src: 'dining_table_2.jpg', caption: 'Oval burl table — cream pedestal, quilted chairs.', alt: 'Oval burl dining table with cream pedestal and quilted chairs' },
-                { src: 'dining_table_3.jpg', caption: 'Grey marble table — mixed sculptural chairs.', alt: 'Grey marble dining table with mixed sculptural chairs' },
-                { src: 'dining_table_4.jpg', caption: 'Glossy burl oval — cream pedestal base.', alt: 'Glossy burl oval dining table with cream pedestal' },
-                { src: 'dining_table_5.jpg', caption: 'Veined marble table — terracotta and cream chairs.', alt: 'Veined marble dining table with terracotta and cream chairs' },
-                { src: 'dining_table_7.jpg', caption: 'Live-edge wood table — cognac and grey chairs.', alt: 'Live-edge wood dining table with cognac and grey chairs' },
-                { src: 'dining_table_8.jpg', caption: 'Light marble oval — taupe bucket chairs.', alt: 'Light marble oval dining table with taupe bucket chairs' },
-                { src: 'dining_table_9.jpg', caption: 'Bold marble oval — brown leather, cream shell.', alt: 'Bold marble oval dining table with two-tone chairs' },
-                { src: 'dining_chair_1.jpg', caption: 'Cream leather chair — champagne metal frame.', alt: 'Cream leather dining chair with champagne metal frame' },
-                { src: 'dining_chair_2.jpg', caption: 'Bentley-inspired chair — cream seat, burl legs.', alt: 'Bentley-inspired cream and tan dining chair with burl wood legs' },
-                { src: 'dining_chair_3.jpg', caption: 'Bentley-inspired taupe — diamond-quilted sides.', alt: 'Bentley-inspired taupe dining chair with diamond quilting' }
+                { src: 'dining_room_1.jpg', caption: 'Caption — material and one distinguishing detail.', alt: 'Dining room piece preview' }
             ]
         },
         {
             id: 'bedroom',
             title: 'Bedroom',
-            intro: "We've found a dedicated Hermès furniture supplier for your master bedroom. You're right — these do exist in Foshan, and the one shown here is a leading option. Besides beds, they offer a full Hermès-inspired furniture series — brochure below. I've also added a couple of Bentley chairs as requested, plus a brochure of minimalist beds for the guest bedrooms.",
+            intro: "We've found options for your bedroom direction. Related brochures are linked below.",
             brochures: [
                 {
-                    href: 'brochure_hermes_series.pdf',
-                    cta: 'Brochure: Hermès Furniture Series'
+                    href: 'brochure_series_example.pdf',
+                    cta: 'Brochure: Furniture Series'
                 },
                 {
-                    href: 'brochure_bed_minimalist.pdf',
-                    cta: 'Brochure: Minimalist Bed Options'
+                    href: 'brochure_beds_example.pdf',
+                    cta: 'Brochure: Bed Options'
                 }
             ],
             images: [
-                { src: 'bed_hermes_1.jpg', caption: 'Hermès-inspired bed — strapped headboard, camel nightstands.', alt: 'Hermès-inspired bed with strapped headboard and camel nightstands' },
-                { src: 'bed_hermes_2.jpg', caption: 'Hermès-inspired grey fabric bed — camel leather footbench.', alt: 'Hermès-inspired grey fabric bed with camel leather footbench' },
-                { src: 'bed_hermes_3.jpg', caption: 'Orange leather bed — winged Hermès-inspired headboard.', alt: 'Orange leather Hermès-inspired bed with winged headboard' },
-                { src: 'bentley_chair_1.jpg', caption: 'Bentley-inspired chair — quilted shell; logo removable on request.', alt: 'Bentley-inspired cream and quilted chair with removable logo' },
-                { src: 'bentley_chair_2.jpg', caption: 'Bentley-inspired lounge — quilted leather, burl wood.', alt: 'Bentley-inspired quilted leather lounge with burl wood shell' }
+                { src: 'bedroom_1.jpg', caption: 'Caption — material and one distinguishing detail.', alt: 'Bedroom piece preview' }
             ]
         }
     ]

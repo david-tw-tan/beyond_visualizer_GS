@@ -25,6 +25,35 @@
         <p class="fl-header__subtitle">A Starting Point for Your Foshan Journey</p>
         <!-- ▼ Update this date whenever you send or revise the proposal -->
         <p class="fl-header__date">15 July 2026</p>
+        <!--
+          ═══════════════════════════════════════════════════════════
+          VERSIONS — keep ONE pattern active; comment out the rest.
+          1 look  → omit this block entirely
+          2 looks → inline switcher (default below)
+          3+ looks → compact menu (details/summary)
+          ═══════════════════════════════════════════════════════════
+        -->
+
+        <!-- 1 look only: delete / comment out the entire versions block -->
+
+        <!-- 2 looks: inline switcher -->
+        <nav class="fl-versions" aria-label="Document versions">
+            <a class="fl-versions__link is-current" href="./" aria-current="page">First Look</a>
+            <span class="fl-versions__sep" aria-hidden="true">·</span>
+            <a class="fl-versions__link" href="../matt_12sQ_2/">Second Look</a>
+        </nav>
+
+        <!--
+        3+ looks: compact menu (uncomment + update links; comment out the 2-look nav above)
+        <details class="fl-versions fl-versions--menu">
+            <summary class="fl-versions__summary">First Look</summary>
+            <div class="fl-versions__panel" role="list">
+                <a class="fl-versions__link is-current" href="./" aria-current="page">First Look — 15 Jul 2026</a>
+                <a class="fl-versions__link" href="../matt_12sQ_2/">Second Look — 30 Jul 2026</a>
+                <a class="fl-versions__link" href="../CLIENT_LOOK_3/">Third Look — DATE</a>
+            </div>
+        </details>
+        -->
         <hr class="fl-header__rule">
     </header>
 
@@ -39,9 +68,10 @@
     <!-- Room galleries (built from FIRST_LOOK_CONFIG) -->
     <div id="fl-rooms" class="fl-rooms"></div>
 
-    <p class="fl-sourcing">
-        Furniture pieces are photographed in factory showrooms where possible. Many pieces can be customized — ask us about it.
-    </p>
+    <aside class="fl-sourcing" aria-label="A note on these pieces">
+        <p class="fl-sourcing__label">A note on these pieces</p>
+        <p class="fl-sourcing__body">Furniture pieces are photographed in factory showrooms where possible. Many pieces can be customized — ask us about it.</p>
+    </aside>
 
     <section class="fl-next" aria-labelledby="fl-next-title">
         <h2 id="fl-next-title" class="fl-next__title">What Happens Next</h2>
