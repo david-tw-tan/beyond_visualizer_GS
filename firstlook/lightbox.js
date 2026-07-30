@@ -187,6 +187,21 @@
     function buildStickyNav(rooms) {
         if (!navRoot) return;
 
+        const inner = document.createElement('div');
+        inner.className = 'fl-room-nav__inner';
+
+        const topBtn = document.createElement('button');
+        topBtn.type = 'button';
+        topBtn.className = 'fl-room-nav__top';
+        topBtn.setAttribute('aria-label', 'Back to top');
+        topBtn.innerHTML =
+            '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">' +
+            '<path fill="currentColor" d="M8 3.2 3.6 7.6a.75.75 0 0 0 1.06 1.06L7.25 6.07V13a.75.75 0 0 0 1.5 0V6.07l2.59 2.59a.75.75 0 1 0 1.06-1.06L8 3.2z"/>' +
+            '</svg>';
+        topBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
         const list = document.createElement('ul');
         list.className = 'fl-room-nav__list';
         list.setAttribute('role', 'list');
@@ -202,8 +217,10 @@
             list.appendChild(li);
         });
 
+        inner.appendChild(topBtn);
+        inner.appendChild(list);
         navRoot.innerHTML = '';
-        navRoot.appendChild(list);
+        navRoot.appendChild(inner);
         navRoot.hidden = false;
     }
 
@@ -214,30 +231,58 @@
         const sections = config.rooms
             .map((room) => document.getElementById(room.id))
             .filter(Boolean);
+        if (!sections.length) return;
+
+        let activeId = null;
+        let lockUntil = 0;
 
         const setActive = (id) => {
+            if (!id || id === activeId) return;
+            activeId = id;
             links.forEach((link) => {
-                link.classList.toggle('is-active', link.dataset.roomTarget === id);
+                const isActive = link.dataset.roomTarget === id;
+                link.classList.toggle('is-active', isActive);
+                if (isActive && typeof link.scrollIntoView === 'function') {
+                    link.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+                }
             });
         };
 
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    const visible = entries
-                        .filter((e) => e.isIntersecting)
-                        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-                    if (visible[0]) setActive(visible[0].target.id);
-                },
-                {
-                    rootMargin: '-20% 0px -55% 0px',
-                    threshold: [0.1, 0.25, 0.5]
-                }
-            );
-            sections.forEach((section) => observer.observe(section));
-        }
+        const updateFromScroll = () => {
+            if (Date.now() < lockUntil) return;
 
-        if (config.rooms[0]) setActive(config.rooms[0].id);
+            const offset = (navRoot ? navRoot.getBoundingClientRect().height : 0) + 8;
+            let current = sections[0].id;
+
+            for (const section of sections) {
+                if (section.getBoundingClientRect().top <= offset) {
+                    current = section.id;
+                }
+            }
+
+            const nearBottom =
+                window.innerHeight + window.scrollY >=
+                document.documentElement.scrollHeight - 48;
+            if (nearBottom) {
+                current = sections[sections.length - 1].id;
+            }
+
+            setActive(current);
+        };
+
+        links.forEach((link) => {
+            link.addEventListener('click', () => {
+                const id = link.dataset.roomTarget;
+                if (!id) return;
+                setActive(id);
+                // Keep the clicked tab active while smooth scroll settles.
+                lockUntil = Date.now() + 900;
+            });
+        });
+
+        window.addEventListener('scroll', updateFromScroll, { passive: true });
+        window.addEventListener('resize', updateFromScroll, { passive: true });
+        updateFromScroll();
     }
 
     /* ─── Collapsible rooms ─── */
@@ -363,9 +408,87 @@
             body.className = 'fl-room__body';
             body.id = room.id + '-body';
 
+            const brochures = Array.isArray(room.brochures)
+                ? room.brochures
+                : room.brochure
+                    ? [room.brochure]
+                    : [];
+            const primaryBrochure = brochures[0] || null;
+
+            if (room.intro) {
+                const intro = document.createElement('p');
+                intro.className = 'fl-room__intro';
+
+                if (primaryBrochure && primaryBrochure.href) {
+                    const label = primaryBrochure.label || 'factory brochure';
+                    const parts = String(room.intro).split('{{brochure}}');
+                    if (parts.length === 2) {
+                        intro.appendChild(document.createTextNode(parts[0]));
+                        const link = document.createElement('a');
+                        link.href = primaryBrochure.href;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = label;
+                        intro.appendChild(link);
+                        intro.appendChild(document.createTextNode(parts[1]));
+                    } else {
+                        intro.textContent = room.intro;
+                    }
+                } else {
+                    intro.textContent = room.intro;
+                }
+
+                body.appendChild(intro);
+            }
+
             const grid = document.createElement('div');
             grid.className = 'fl-masonry masonry-layout';
             body.appendChild(grid);
+
+            const ctaBrochures = brochures.filter((item) => item && item.href && item.cta);
+            if (ctaBrochures.length) {
+                const list = document.createElement('div');
+                list.className = 'fl-room__brochures';
+
+                for (const item of ctaBrochures) {
+                    const cta = document.createElement('a');
+                    cta.className = 'fl-room__brochure';
+                    cta.href = item.href;
+                    cta.target = '_blank';
+                    cta.rel = 'noopener noreferrer';
+
+                    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    icon.setAttribute('class', 'fl-room__brochure-icon');
+                    icon.setAttribute('viewBox', '0 0 24 24');
+                    icon.setAttribute('width', '26');
+                    icon.setAttribute('height', '26');
+                    icon.setAttribute('aria-hidden', 'true');
+                    icon.setAttribute('focusable', 'false');
+                    icon.innerHTML =
+                        '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 7V3.5L18.5 9H15zM8.5 12h7a.75.75 0 0 1 0 1.5h-7a.75.75 0 0 1 0-1.5zm0 3.25h7a.75.75 0 0 1 0 1.5h-7a.75.75 0 0 1 0-1.5zm0 3.25h4.5a.75.75 0 0 1 0 1.5H8.5a.75.75 0 0 1 0-1.5z"/>';
+
+                    const text = document.createElement('span');
+                    text.textContent = item.cta;
+
+                    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    arrow.setAttribute('class', 'fl-room__brochure-arrow');
+                    arrow.setAttribute('viewBox', '0 0 24 24');
+                    arrow.setAttribute('width', '16');
+                    arrow.setAttribute('height', '16');
+                    arrow.setAttribute('aria-hidden', 'true');
+                    arrow.setAttribute('focusable', 'false');
+                    arrow.innerHTML =
+                        '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M9 7h8v8"/>';
+
+                    cta.appendChild(icon);
+                    cta.appendChild(text);
+                    cta.appendChild(arrow);
+                    list.appendChild(cta);
+                }
+
+                body.appendChild(list);
+            }
+
             section.appendChild(body);
 
             roomsRoot.appendChild(section);
