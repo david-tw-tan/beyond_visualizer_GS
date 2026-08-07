@@ -497,7 +497,15 @@
             if (quote.photoTip) {
                 const tip = document.createElement('p');
                 tip.className = 'fl-quote__photo-tip';
-                tip.textContent = quote.photoTip;
+                tip.innerHTML =
+                    '<span class="fl-quote__photo-tip-icon" aria-hidden="true">' +
+                    '<svg viewBox="0 0 24 24" width="15" height="15" focusable="false">' +
+                    '<path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M8.5 11.5V7.75a1.75 1.75 0 0 1 3.5 0V11"/>' +
+                    '<path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M12 11V6.75a1.75 1.75 0 0 1 3.5 0V11"/>' +
+                    '<path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M15.5 11V8.25a1.75 1.75 0 0 1 3.5 0V14.5c0 2.9-2.35 5.25-5.25 5.25h-1.1c-1.7 0-3.3-.8-4.3-2.15L6 14.5"/>' +
+                    '<path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M8.5 11.5V16"/>' +
+                    '</svg></span>' +
+                    '<span>' + escapeHtml(quote.photoTip) + '</span>';
                 titleBlock.appendChild(tip);
             }
 
@@ -574,7 +582,7 @@
                 const total = document.createElement('div');
                 total.className = 'fl-quote__total';
                 total.innerHTML =
-                    '<span class="fl-quote__total-label">Room total</span>' +
+                    '<span class="fl-quote__total-label">' + escapeHtml(quote.totalHeading || 'Room total') + '</span>' +
                     '<span class="fl-quote__total-price">' + escapeHtml(quote.totalLabel) + '</span>';
                 list.appendChild(total);
             }
@@ -582,11 +590,23 @@
             section.appendChild(list);
         }
 
+        const footnotes = [];
         if (quote.priceNoteHtml || quote.priceNote) {
-            const note = document.createElement('p');
-            note.className = 'fl-quote__price-note';
-            note.innerHTML = quote.priceNoteHtml || escapeHtml(quote.priceNote);
-            section.appendChild(note);
+            footnotes.push(quote.priceNoteHtml || escapeHtml(quote.priceNote));
+        }
+        if (quote.dimsNoteHtml || quote.dimsNote) {
+            footnotes.push(quote.dimsNoteHtml || escapeHtml(quote.dimsNote));
+        }
+        if (footnotes.length) {
+            const notes = document.createElement('div');
+            notes.className = 'fl-quote__footnotes';
+            footnotes.forEach((html) => {
+                const note = document.createElement('p');
+                note.className = 'fl-quote__price-note';
+                note.innerHTML = html;
+                notes.appendChild(note);
+            });
+            section.appendChild(notes);
         }
 
         quoteRoot.appendChild(section);

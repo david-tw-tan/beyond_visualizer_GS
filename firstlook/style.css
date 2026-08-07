@@ -926,7 +926,7 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 3.25rem;
+    padding: 0 3.5rem;
 }
 
 .fl-lightbox__img {
@@ -982,6 +982,7 @@ button {
 .fl-lightbox__nav {
     position: absolute;
     top: 50%;
+    bottom: auto;
     z-index: 2;
     transform: translateY(-50%);
     display: inline-flex;
@@ -990,23 +991,23 @@ button {
     width: 2.75rem;
     height: 2.75rem;
     color: #f7f3ec;
-    background: rgba(26, 26, 24, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(26, 26, 24, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 50%;
     transition: background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .fl-lightbox__nav:hover {
-    background: rgba(26, 26, 24, 0.7);
+    background: rgba(26, 26, 24, 0.75);
     border-color: rgba(196, 169, 122, 0.55);
 }
 
 .fl-lightbox__nav--prev {
-    left: max(0.75rem, env(safe-area-inset-left));
+    left: max(0.85rem, env(safe-area-inset-left));
 }
 
 .fl-lightbox__nav--next {
-    right: max(0.75rem, env(safe-area-inset-right));
+    right: max(0.85rem, env(safe-area-inset-right));
 }
 
 /* ─── Rough quote list ─── */
@@ -1188,11 +1189,19 @@ button {
     white-space: nowrap;
 }
 
-.fl-quote__price-note {
+.fl-quote__footnotes {
     margin: 0.85rem 0 0;
+}
+
+.fl-quote__price-note {
+    margin: 0;
     font-size: 0.78rem;
     line-height: 1.55;
     color: #8a847c;
+}
+
+.fl-quote__footnotes .fl-quote__price-note + .fl-quote__price-note {
+    margin-top: 0.35rem;
 }
 
 .fl-quote__price-note strong {
@@ -1201,10 +1210,24 @@ button {
 }
 
 .fl-quote__photo-tip {
-    margin: 0.45rem 0 0;
+    margin: 0.4rem 0 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
     font-size: 0.78rem;
     line-height: 1.55;
     color: #a68b5b;
+}
+
+.fl-quote__photo-tip-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: #a68b5b;
+}
+
+.fl-quote__photo-tip-icon svg {
+    display: block;
 }
 
 .fl-sourcing__body + .fl-sourcing__body {
@@ -1249,11 +1272,15 @@ button {
     .fl-quote__cell-qty,
     .fl-quote__cell-price {
         align-self: start;
+        justify-self: center;
         padding-top: 0;
+        text-align: center;
+        width: 100%;
     }
 
-    .fl-quote__cell-price {
-        text-align: right;
+    .fl-quote__list-head .fl-quote__col-qty,
+    .fl-quote__list-head .fl-quote__col-price {
+        text-align: center;
     }
 
     .fl-quote__mobile-label {
@@ -1263,19 +1290,20 @@ button {
 
 @media (max-width: 640px) {
     .fl-lightbox {
-        padding: 2.75rem 0.4rem 1rem;
+        padding: 2.75rem 0.4rem 5rem;
     }
 
     .fl-lightbox__figure {
-        padding: 0;
         width: 100%;
         max-width: 100%;
+        max-height: calc(100vh - 7.5rem);
+        padding: 0;
     }
 
     .fl-lightbox__img {
         width: 100%;
         max-width: 100%;
-        max-height: calc(100vh - 9.5rem);
+        max-height: calc(100vh - 12.5rem);
     }
 
     .fl-lightbox__caption {
@@ -1284,18 +1312,24 @@ button {
     }
 
     .fl-lightbox__nav {
-        width: 2.5rem;
-        height: 2.5rem;
-        background: rgba(26, 26, 24, 0.55);
-        border-color: rgba(255, 255, 255, 0.28);
+        top: auto;
+        bottom: max(1rem, env(safe-area-inset-bottom));
+        transform: none;
+        width: 3.15rem;
+        height: 3.15rem;
+    }
+
+    .fl-lightbox__nav svg {
+        width: 26px;
+        height: 26px;
     }
 
     .fl-lightbox__nav--prev {
-        left: max(0.35rem, env(safe-area-inset-left));
+        left: max(0.85rem, env(safe-area-inset-left));
     }
 
     .fl-lightbox__nav--next {
-        right: max(0.35rem, env(safe-area-inset-right));
+        right: max(0.85rem, env(safe-area-inset-right));
     }
 
     .fl-lightbox__caption-title {
