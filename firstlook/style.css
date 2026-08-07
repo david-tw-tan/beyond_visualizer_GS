@@ -979,6 +979,20 @@ button {
     letter-spacing: 0.02em;
 }
 
+.fl-lightbox__caption-sub {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.fl-lightbox__counter {
+    display: inline-block;
+    margin-top: 0.35rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
 .fl-lightbox__nav {
     position: absolute;
     top: 50%;
@@ -1086,14 +1100,23 @@ button {
     row-gap: 0.95rem;
     padding: 0.9rem 0.85rem;
     border-bottom: 1px solid #e8e2d9;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
 }
 
 .fl-quote__row:last-of-type {
     border-bottom: 1px solid #ddd4c6;
 }
 
+.fl-quote__row:hover,
+.fl-quote__row:focus-visible {
+    background: rgba(235, 228, 216, 0.55);
+    outline: none;
+}
+
 .fl-quote__thumb-btn {
     grid-area: img;
+    position: relative;
     display: block;
     width: 4.5rem;
     padding: 0;
@@ -1110,6 +1133,28 @@ button {
     height: 4.5rem;
     object-fit: cover;
     display: block;
+}
+
+.fl-quote__thumb-count {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 1;
+    width: 1.15rem;
+    height: 1.15rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    background: rgba(26, 26, 24, 0.72);
+    color: #f7f3ec;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    pointer-events: none;
 }
 
 .fl-quote__desc {

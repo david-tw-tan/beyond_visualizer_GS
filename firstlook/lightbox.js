@@ -422,10 +422,19 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (!lightboxEl || !lightboxEl.classList.contains('is-open')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') stepLightbox(-1);
-            if (e.key === 'ArrowRight') stepLightbox(1);
+            if (lightboxEl && lightboxEl.classList.contains('is-open')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') stepLightbox(-1);
+                if (e.key === 'ArrowRight') stepLightbox(1);
+                return;
+            }
+
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            const row = e.target.closest('.fl-quote__row[data-lightbox-index]');
+            if (!row || e.target !== row) return;
+            e.preventDefault();
+            const index = Number(row.dataset.lightboxIndex);
+            if (!Number.isNaN(index)) openLightbox(index);
         });
     }
 
@@ -525,36 +534,67 @@
             list.appendChild(head);
 
             items.forEach((item) => {
-                const index = allImages.length;
-                const captionHtml =
-                    '<span class="fl-lightbox__caption-title">' + escapeHtml(item.label) + '</span>' +
-                    '<span class="fl-lightbox__caption-body">' + escapeHtml(item.summary) + '</span>' +
-                    '<span class="fl-lightbox__meta">Qty ' + escapeHtml(String(item.qty)) +
-                    ' · ' + escapeHtml(item.priceLabel) + '</span>';
+                const imageList = Array.isArray(item.images) && item.images.length
+                    ? item.images.map((entry) => (
+                        typeof entry === 'string'
+                            ? { src: entry }
+                            : { src: entry.src, caption: entry.caption || '' }
+                    )).filter((entry) => entry.src)
+                    : [{ src: item.src, caption: '' }];
 
-                allImages.push({
-                    src: item.src,
-                    alt: item.label,
-                    caption: item.label + ' — Qty ' + item.qty + ' · ' + item.priceLabel,
-                    captionHtml: captionHtml,
-                    gallery: 'quote-items'
+                const firstIndex = allImages.length;
+                imageList.forEach((imageEntry, imageIndex) => {
+                    const isSecondary = imageIndex > 0;
+                    const counterHtml = imageList.length > 1
+                        ? '<span class="fl-lightbox__counter">' + (imageIndex + 1) + ' / ' + imageList.length + '</span>'
+                        : '';
+                    const bodyHtml = isSecondary
+                        ? (imageEntry.caption
+                            ? '<span class="fl-lightbox__caption-body">' + escapeHtml(imageEntry.caption) + '</span>'
+                            : '')
+                        : '<span class="fl-lightbox__caption-body">' + escapeHtml(item.summary) + '</span>';
+                    const captionHtml =
+                        '<span class="fl-lightbox__caption-title">' + escapeHtml(item.label) + '</span>' +
+                        bodyHtml +
+                        '<span class="fl-lightbox__meta">Qty ' + escapeHtml(String(item.qty)) +
+                        ' · ' + escapeHtml(item.priceLabel) + '</span>' +
+                        counterHtml;
+
+                    allImages.push({
+                        src: imageEntry.src,
+                        alt: item.label + (imageEntry.caption ? ' — ' + imageEntry.caption : ''),
+                        caption: item.label + ' — Qty ' + item.qty + ' · ' + item.priceLabel,
+                        captionHtml: captionHtml,
+                        gallery: 'quote-items'
+                    });
                 });
 
                 const row = document.createElement('article');
                 row.className = 'fl-quote__row';
                 row.setAttribute('role', 'listitem');
+                row.dataset.lightboxIndex = String(firstIndex);
+                row.tabIndex = 0;
+                row.title = 'Tap to enlarge' + (imageList.length > 1 ? ' (' + imageList.length + ' photos)' : '');
 
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'fl-quote__thumb-btn';
-                btn.dataset.lightboxIndex = String(index);
-                btn.setAttribute('aria-label', 'View larger: ' + item.label);
+                btn.tabIndex = -1;
+                btn.setAttribute('aria-hidden', 'true');
                 const img = document.createElement('img');
-                img.src = item.src;
+                img.src = item.src || imageList[0].src;
                 img.alt = item.label;
                 img.loading = 'lazy';
                 img.decoding = 'async';
                 btn.appendChild(img);
+
+                if (imageList.length > 1) {
+                    const badge = document.createElement('span');
+                    badge.className = 'fl-quote__thumb-count';
+                    badge.textContent = String(imageList.length);
+                    badge.setAttribute('aria-hidden', 'true');
+                    btn.appendChild(badge);
+                }
 
                 const desc = document.createElement('div');
                 desc.className = 'fl-quote__desc';
