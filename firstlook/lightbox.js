@@ -27,7 +27,9 @@
 
     const roomsRoot = document.getElementById('fl-rooms');
     const navRoot = document.getElementById('fl-room-nav');
-    if (!roomsRoot) return;
+    const quoteRoot = document.getElementById('fl-quote');
+    // Quote-only pages may omit #fl-rooms; look pages always have it.
+    if (!roomsRoot && !quoteRoot) return;
 
     const aspectCache = new Map();
     const masonryState = new WeakMap();
@@ -299,7 +301,10 @@
     let lightboxEl = null;
     let lightboxImg = null;
     let lightboxCaption = null;
+    let lightboxPrevBtn = null;
+    let lightboxNextBtn = null;
     let allImages = [];
+    let lightboxIndex = 0;
 
     function ensureLightbox() {
         lightboxEl = document.createElement('div');
@@ -311,6 +316,14 @@
 
         lightboxEl.innerHTML =
             '<button type="button" class="fl-lightbox__close" aria-label="Close">&times;</button>' +
+            '<button type="button" class="fl-lightbox__nav fl-lightbox__nav--prev" aria-label="Previous image">' +
+            '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">' +
+            '<path fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/>' +
+            '</svg></button>' +
+            '<button type="button" class="fl-lightbox__nav fl-lightbox__nav--next" aria-label="Next image">' +
+            '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">' +
+            '<path fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>' +
+            '</svg></button>' +
             '<figure class="fl-lightbox__figure">' +
             '<img class="fl-lightbox__img" alt="">' +
             '<figcaption class="fl-lightbox__caption"></figcaption>' +
@@ -319,27 +332,72 @@
         document.body.appendChild(lightboxEl);
         lightboxImg = lightboxEl.querySelector('.fl-lightbox__img');
         lightboxCaption = lightboxEl.querySelector('.fl-lightbox__caption');
+        lightboxPrevBtn = lightboxEl.querySelector('.fl-lightbox__nav--prev');
+        lightboxNextBtn = lightboxEl.querySelector('.fl-lightbox__nav--next');
 
         lightboxEl.querySelector('.fl-lightbox__close').addEventListener('click', closeLightbox);
+        lightboxPrevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            stepLightbox(-1);
+        });
+        lightboxNextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            stepLightbox(1);
+        });
         lightboxEl.addEventListener('click', (e) => {
             if (e.target === lightboxEl) closeLightbox();
         });
     }
 
-    function openLightbox(index) {
-        const item = allImages[index];
-        if (!item || !lightboxEl) return;
+    function galleryIndexesFor(index) {
+        const current = allImages[index];
+        if (!current) return [];
+        const group = current.gallery || null;
+        if (group) {
+            return allImages
+                .map((item, i) => (item.gallery === group ? i : -1))
+                .filter((i) => i >= 0);
+        }
+        return allImages.map((_, i) => i);
+    }
+
+    function showLightboxItem(index) {
+        if (!allImages.length || !lightboxEl) return;
+        const len = allImages.length;
+        lightboxIndex = ((index % len) + len) % len;
+        const item = allImages[lightboxIndex];
 
         lightboxImg.src = item.src;
         lightboxImg.alt = item.alt || item.caption || '';
-        lightboxCaption.textContent = item.caption || '';
-        lightboxCaption.hidden = !item.caption;
+        if (item.captionHtml) {
+            lightboxCaption.innerHTML = item.captionHtml;
+            lightboxCaption.hidden = false;
+        } else {
+            lightboxCaption.textContent = item.caption || '';
+            lightboxCaption.hidden = !item.caption;
+        }
 
+        const multi = galleryIndexesFor(lightboxIndex).length > 1;
+        lightboxPrevBtn.hidden = !multi;
+        lightboxNextBtn.hidden = !multi;
+    }
+
+    function openLightbox(index) {
+        if (!lightboxEl || !allImages.length) return;
+        showLightboxItem(index);
         lightboxEl.hidden = false;
-        // Force reflow so the opacity transition runs from closed → open
         void lightboxEl.offsetWidth;
         lightboxEl.classList.add('is-open');
         document.body.classList.add('fl-lightbox-open');
+    }
+
+    function stepLightbox(delta) {
+        if (!lightboxEl || !lightboxEl.classList.contains('is-open')) return;
+        const group = galleryIndexesFor(lightboxIndex);
+        if (group.length < 2) return;
+        const pos = group.indexOf(lightboxIndex);
+        const nextPos = ((pos + delta) % group.length + group.length) % group.length;
+        showLightboxItem(group[nextPos]);
     }
 
     function closeLightbox() {
@@ -355,7 +413,8 @@
     }
 
     function setupLightboxClicks() {
-        roomsRoot.addEventListener('click', (e) => {
+        const clickRoot = document.querySelector('.fl-page') || document;
+        clickRoot.addEventListener('click', (e) => {
             const btn = e.target.closest('[data-lightbox-index]');
             if (!btn) return;
             const index = Number(btn.dataset.lightboxIndex);
@@ -363,22 +422,191 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && lightboxEl && lightboxEl.classList.contains('is-open')) {
-                closeLightbox();
-            }
+            if (!lightboxEl || !lightboxEl.classList.contains('is-open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') stepLightbox(-1);
+            if (e.key === 'ArrowRight') stepLightbox(1);
         });
+    }
+
+    function buildQuoteSection() {
+        const quote = config.quote;
+        if (!quote || !quoteRoot) return;
+
+        quoteRoot.innerHTML = '';
+
+        const section = document.createElement('section');
+        section.className = 'fl-room fl-quote';
+        section.id = quote.id || 'master-bedroom';
+
+        const heading = document.createElement('h2');
+        heading.className = 'fl-room__title fl-quote__title';
+        heading.textContent = quote.title || 'Master Bedroom';
+        section.appendChild(heading);
+
+        if (quote.intro) {
+            const intro = document.createElement('p');
+            intro.className = 'fl-room__intro';
+            intro.textContent = quote.intro;
+            section.appendChild(intro);
+        }
+
+        if (quote.hero && quote.hero.src) {
+            const heroIndex = allImages.length;
+            allImages.push({
+                src: quote.hero.src,
+                alt: quote.hero.alt || '',
+                caption: quote.hero.caption || '',
+                captionHtml: quote.hero.captionHtml || '',
+                gallery: 'quote-hero'
+            });
+
+            const hero = document.createElement('figure');
+            hero.className = 'fl-quote__hero';
+            const heroBtn = document.createElement('button');
+            heroBtn.type = 'button';
+            heroBtn.className = 'fl-quote__hero-btn';
+            heroBtn.dataset.lightboxIndex = String(heroIndex);
+            heroBtn.setAttribute('aria-label', quote.hero.alt || 'View reference image larger');
+            const heroImg = document.createElement('img');
+            heroImg.src = quote.hero.src;
+            heroImg.alt = quote.hero.alt || '';
+            heroImg.loading = 'eager';
+            heroImg.decoding = 'async';
+            heroBtn.appendChild(heroImg);
+            hero.appendChild(heroBtn);
+            if (quote.hero.caption) {
+                const cap = document.createElement('figcaption');
+                cap.className = 'fl-quote__hero-caption';
+                cap.textContent = quote.hero.caption;
+                hero.appendChild(cap);
+            }
+            section.appendChild(hero);
+        }
+
+        const items = Array.isArray(quote.items) ? quote.items : [];
+        if (items.length) {
+            const list = document.createElement('div');
+            list.className = 'fl-quote__list';
+            list.setAttribute('role', 'list');
+
+            const head = document.createElement('div');
+            head.className = 'fl-quote__list-head';
+            head.innerHTML =
+                '<span class="fl-quote__col-item">Item</span>' +
+                '<span class="fl-quote__col-desc">Description</span>' +
+                '<span class="fl-quote__col-qty">Qty</span>' +
+                '<span class="fl-quote__col-price">Price (USD)</span>';
+            list.appendChild(head);
+
+            items.forEach((item) => {
+                const index = allImages.length;
+                const captionHtml =
+                    '<span class="fl-lightbox__caption-title">' + escapeHtml(item.label) + '</span>' +
+                    '<span class="fl-lightbox__caption-body">' + escapeHtml(item.summary) + '</span>' +
+                    '<span class="fl-lightbox__meta">Qty ' + escapeHtml(String(item.qty)) +
+                    ' · ' + escapeHtml(item.priceLabel) + '</span>';
+
+                allImages.push({
+                    src: item.src,
+                    alt: item.label,
+                    caption: item.label + ' — Qty ' + item.qty + ' · ' + item.priceLabel,
+                    captionHtml: captionHtml,
+                    gallery: 'quote-items'
+                });
+
+                const row = document.createElement('article');
+                row.className = 'fl-quote__row';
+                row.setAttribute('role', 'listitem');
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'fl-quote__thumb-btn';
+                btn.dataset.lightboxIndex = String(index);
+                btn.setAttribute('aria-label', 'View larger: ' + item.label);
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.label;
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                btn.appendChild(img);
+
+                const desc = document.createElement('div');
+                desc.className = 'fl-quote__desc';
+                desc.innerHTML =
+                    '<p class="fl-quote__label">' + escapeHtml(item.label) + '</p>' +
+                    '<p class="fl-quote__summary">' + escapeHtml(item.summary) + '</p>' +
+                    '<p class="fl-quote__dims">' + escapeHtml(item.dims) + '</p>';
+
+                const qty = document.createElement('p');
+                qty.className = 'fl-quote__cell-qty';
+                qty.innerHTML = '<span class="fl-quote__mobile-label">Qty</span> ' + escapeHtml(String(item.qty));
+
+                const price = document.createElement('p');
+                price.className = 'fl-quote__cell-price';
+                price.innerHTML = '<span class="fl-quote__mobile-label">Price</span> ' + escapeHtml(item.priceLabel);
+
+                row.appendChild(btn);
+                row.appendChild(desc);
+                row.appendChild(qty);
+                row.appendChild(price);
+                list.appendChild(row);
+            });
+
+            if (quote.totalLabel) {
+                const total = document.createElement('div');
+                total.className = 'fl-quote__total';
+                total.innerHTML =
+                    '<span class="fl-quote__total-label">Room subtotal (ex-factory)</span>' +
+                    '<span class="fl-quote__total-price">' + escapeHtml(quote.totalLabel) + '</span>';
+                list.appendChild(total);
+            }
+
+            section.appendChild(list);
+        }
+
+        if (quote.photoTip) {
+            const tip = document.createElement('p');
+            tip.className = 'fl-quote__photo-tip';
+            tip.textContent = quote.photoTip;
+            section.appendChild(tip);
+        }
+
+        if (quote.priceNote) {
+            const note = document.createElement('p');
+            note.className = 'fl-quote__price-note';
+            note.textContent = quote.priceNote;
+            section.appendChild(note);
+        }
+
+        quoteRoot.appendChild(section);
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     /* ─── Build page ─── */
 
     async function build() {
         allImages = [];
-        buildStickyNav(config.rooms);
-        roomsRoot.innerHTML = '';
+
+        if (!config.hideRoomNav && config.rooms.length) {
+            buildStickyNav(config.rooms);
+        }
+
+        if (roomsRoot) {
+            roomsRoot.innerHTML = '';
+        }
 
         let indexOffset = 0;
 
         for (const room of config.rooms) {
+            if (!roomsRoot) break;
             const section = document.createElement('section');
             section.className = 'fl-room';
             section.id = room.id;
@@ -502,6 +730,7 @@
             indexOffset += images.length;
         }
 
+        buildQuoteSection();
         ensureLightbox();
         setupLightboxClicks();
         setupActiveNav();

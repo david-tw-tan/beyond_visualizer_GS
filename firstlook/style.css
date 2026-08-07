@@ -926,6 +926,7 @@ button {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0 3.25rem;
 }
 
 .fl-lightbox__img {
@@ -940,9 +941,351 @@ button {
     margin: 0.85rem 0 0;
     max-width: 36rem;
     text-align: center;
-    font-size: 0.78rem;
-    line-height: 1.5;
+    font-size: 0.82rem;
+    line-height: 1.55;
     color: rgba(255, 255, 255, 0.72);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.fl-lightbox__caption-title {
+    display: block;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.98);
+}
+
+.fl-lightbox__caption-body {
+    display: block;
+    max-width: 32rem;
+}
+
+.fl-lightbox__caption strong {
+    display: inline-block;
+    margin-bottom: 0.2rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.fl-lightbox__meta {
+    display: inline-block;
+    margin-top: 0.15rem;
+    color: #c4a97a;
+    letter-spacing: 0.02em;
+}
+
+.fl-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: #f7f3ec;
+    background: rgba(26, 26, 24, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    transition: background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fl-lightbox__nav:hover {
+    background: rgba(26, 26, 24, 0.7);
+    border-color: rgba(196, 169, 122, 0.55);
+}
+
+.fl-lightbox__nav--prev {
+    left: max(0.75rem, env(safe-area-inset-left));
+}
+
+.fl-lightbox__nav--next {
+    right: max(0.75rem, env(safe-area-inset-right));
+}
+
+/* ─── Rough quote list ─── */
+
+.fl-quote {
+    margin-bottom: 2.75rem;
+}
+
+.fl-quote__title {
+    margin: 0 0 1rem;
+}
+
+.fl-quote__hero {
+    margin: 0 0 1.75rem;
+}
+
+.fl-quote__hero-btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    cursor: zoom-in;
+    border: 1px solid #ddd4c6;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #ebe4d8;
+}
+
+.fl-quote__hero-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.fl-quote__hero-caption {
+    margin: 0.55rem 0 0;
+    font-size: 0.78rem;
+    color: #8a847c;
+}
+
+.fl-quote__list {
+    border: 1px solid #ddd4c6;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+}
+
+.fl-quote__list-head {
+    display: none;
+}
+
+.fl-quote__row {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    grid-template-areas:
+        "img desc desc"
+        "img qty price";
+    column-gap: 0.85rem;
+    row-gap: 0.95rem;
+    padding: 0.9rem 0.85rem;
+    border-bottom: 1px solid #e8e2d9;
+}
+
+.fl-quote__row:last-of-type {
+    border-bottom: 1px solid #ddd4c6;
+}
+
+.fl-quote__thumb-btn {
+    grid-area: img;
+    display: block;
+    width: 4.5rem;
+    padding: 0;
+    cursor: zoom-in;
+    border: 1px solid #ddd4c6;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #f0ebe4;
+    align-self: start;
+}
+
+.fl-quote__thumb-btn img {
+    width: 100%;
+    height: 4.5rem;
+    object-fit: cover;
+    display: block;
+}
+
+.fl-quote__desc {
+    grid-area: desc;
+    min-width: 0;
+}
+
+.fl-quote__label {
+    margin: 0 0 0.3rem;
+    font-weight: 500;
+    color: #1a1a18;
+}
+
+.fl-quote__summary {
+    margin: 0 0 0.35rem;
+    line-height: 1.55;
+    color: #5e5a54;
+    font-size: 0.88rem;
+    overflow-wrap: break-word;
+}
+
+.fl-quote__dims {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #8a847c;
+    overflow-wrap: break-word;
+}
+
+.fl-quote__cell-qty,
+.fl-quote__cell-price {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.88rem;
+    color: #5e5a54;
+}
+
+.fl-quote__cell-qty {
+    grid-area: qty;
+    align-self: end;
+    padding-top: 0.15rem;
+}
+
+.fl-quote__cell-price {
+    grid-area: price;
+    align-self: end;
+    justify-self: end;
+    padding-top: 0.15rem;
+    font-weight: 500;
+    color: #1a1a18;
+}
+
+.fl-quote__mobile-label {
+    color: #8a847c;
+    font-weight: 400;
+}
+
+.fl-quote__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 0.85rem;
+    background: #ebe4d8;
+}
+
+.fl-quote__total-label {
+    font-weight: 500;
+    color: #1a1a18;
+}
+
+.fl-quote__total-price {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1a1a18;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.fl-quote__photo-tip {
+    margin: 0.85rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #a68b5b;
+}
+
+.fl-quote__price-note {
+    margin: 0.45rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #8a847c;
+}
+
+.fl-sourcing__body + .fl-sourcing__body {
+    margin-top: 0.85rem;
+}
+
+.fl-sourcing__body strong {
+    font-weight: 500;
+    color: #1a1a18;
+}
+
+@media (min-width: 720px) {
+    .fl-quote__list-head {
+        display: grid;
+        grid-template-columns: 5.5rem minmax(0, 1fr) 3.5rem 6.5rem;
+        gap: 0.85rem;
+        padding: 0.75rem 0.85rem;
+        font-size: 0.68rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #8a847c;
+        background: #ebe4d8;
+        border-bottom: 1px solid #ddd4c6;
+    }
+
+    .fl-quote__row {
+        grid-template-columns: 5.5rem minmax(0, 1fr) 3.5rem 6.5rem;
+        grid-template-areas: "img desc qty price";
+        align-items: start;
+        gap: 0.85rem;
+    }
+
+    .fl-quote__thumb-btn {
+        width: 5.5rem;
+    }
+
+    .fl-quote__thumb-btn img {
+        height: 4.25rem;
+    }
+
+    .fl-quote__cell-qty,
+    .fl-quote__cell-price {
+        align-self: start;
+        padding-top: 0;
+    }
+
+    .fl-quote__cell-price {
+        text-align: right;
+    }
+
+    .fl-quote__mobile-label {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .fl-lightbox {
+        padding: 2.75rem 0.4rem 1rem;
+    }
+
+    .fl-lightbox__figure {
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .fl-lightbox__img {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 9.5rem);
+    }
+
+    .fl-lightbox__caption {
+        padding: 0 0.75rem;
+        max-width: 100%;
+    }
+
+    .fl-lightbox__nav {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: rgba(26, 26, 24, 0.55);
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .fl-lightbox__nav--prev {
+        left: max(0.35rem, env(safe-area-inset-left));
+    }
+
+    .fl-lightbox__nav--next {
+        right: max(0.35rem, env(safe-area-inset-right));
+    }
+
+    .fl-lightbox__caption-title {
+        font-size: 1.15rem;
+    }
+
+    .fl-quote__total-label {
+        font-size: 0.92rem;
+    }
+
+    .fl-page {
+        overflow-x: clip;
+    }
 }
 
 body.fl-lightbox-open {
