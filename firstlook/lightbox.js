@@ -486,6 +486,23 @@
 
         const items = Array.isArray(quote.items) ? quote.items : [];
         if (items.length) {
+            const titleBlock = document.createElement('div');
+            titleBlock.className = 'fl-quote__list-titleblock';
+
+            const listTitle = document.createElement('h3');
+            listTitle.className = 'fl-quote__list-title';
+            listTitle.textContent = quote.listTitle || 'Price List';
+            titleBlock.appendChild(listTitle);
+
+            if (quote.photoTip) {
+                const tip = document.createElement('p');
+                tip.className = 'fl-quote__photo-tip';
+                tip.textContent = quote.photoTip;
+                titleBlock.appendChild(tip);
+            }
+
+            section.appendChild(titleBlock);
+
             const list = document.createElement('div');
             list.className = 'fl-quote__list';
             list.setAttribute('role', 'list');
@@ -540,11 +557,11 @@
 
                 const qty = document.createElement('p');
                 qty.className = 'fl-quote__cell-qty';
-                qty.innerHTML = '<span class="fl-quote__mobile-label">Qty</span> ' + escapeHtml(String(item.qty));
+                qty.innerHTML = '<span class="fl-quote__mobile-label">Quantity:</span> ' + escapeHtml(String(item.qty));
 
                 const price = document.createElement('p');
                 price.className = 'fl-quote__cell-price';
-                price.innerHTML = '<span class="fl-quote__mobile-label">Price</span> ' + escapeHtml(item.priceLabel);
+                price.innerHTML = '<span class="fl-quote__mobile-label">Price:</span> ' + escapeHtml(item.priceLabel);
 
                 row.appendChild(btn);
                 row.appendChild(desc);
@@ -557,7 +574,7 @@
                 const total = document.createElement('div');
                 total.className = 'fl-quote__total';
                 total.innerHTML =
-                    '<span class="fl-quote__total-label">Room subtotal (ex-factory)</span>' +
+                    '<span class="fl-quote__total-label">Room total</span>' +
                     '<span class="fl-quote__total-price">' + escapeHtml(quote.totalLabel) + '</span>';
                 list.appendChild(total);
             }
@@ -565,17 +582,10 @@
             section.appendChild(list);
         }
 
-        if (quote.photoTip) {
-            const tip = document.createElement('p');
-            tip.className = 'fl-quote__photo-tip';
-            tip.textContent = quote.photoTip;
-            section.appendChild(tip);
-        }
-
-        if (quote.priceNote) {
+        if (quote.priceNoteHtml || quote.priceNote) {
             const note = document.createElement('p');
             note.className = 'fl-quote__price-note';
-            note.textContent = quote.priceNote;
+            note.innerHTML = quote.priceNoteHtml || escapeHtml(quote.priceNote);
             section.appendChild(note);
         }
 

@@ -1046,6 +1046,24 @@ button {
     color: #8a847c;
 }
 
+.fl-quote__list-titleblock {
+    margin: 0 0 0.85rem;
+    text-align: center;
+}
+
+.fl-quote__list-title {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a68b5b;
+}
+
+.fl-quote__list-titleblock .fl-quote__photo-tip {
+    margin: 0.4rem 0 0;
+}
+
 .fl-quote__list {
     border: 1px solid #ddd4c6;
     border-radius: 2px;
@@ -1143,8 +1161,8 @@ button {
 }
 
 .fl-quote__mobile-label {
-    color: #8a847c;
-    font-weight: 400;
+    color: #a68b5b;
+    font-weight: 500;
 }
 
 .fl-quote__total {
@@ -1170,18 +1188,23 @@ button {
     white-space: nowrap;
 }
 
-.fl-quote__photo-tip {
+.fl-quote__price-note {
     margin: 0.85rem 0 0;
     font-size: 0.78rem;
     line-height: 1.55;
-    color: #a68b5b;
+    color: #8a847c;
 }
 
-.fl-quote__price-note {
+.fl-quote__price-note strong {
+    font-weight: 500;
+    color: #1a1a18;
+}
+
+.fl-quote__photo-tip {
     margin: 0.45rem 0 0;
     font-size: 0.78rem;
     line-height: 1.55;
-    color: #8a847c;
+    color: #a68b5b;
 }
 
 .fl-sourcing__body + .fl-sourcing__body {
