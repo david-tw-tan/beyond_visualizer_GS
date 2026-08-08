@@ -1284,6 +1284,7 @@ button {
     color: #1a1a18;
 }
 
+
 @media (min-width: 720px) {
     .fl-quote__list-head {
         display: grid;
