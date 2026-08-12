@@ -675,7 +675,7 @@ button {
 .fl-step {
     position: relative;
     margin: 0 0 1.65rem;
-    padding-left: 2.65rem;
+    padding-left: 2.15rem;
     counter-increment: fl-step;
 }
 
@@ -1335,6 +1335,10 @@ button {
 }
 
 @media (max-width: 640px) {
+    .fl-step {
+        padding-left: 1.85rem;
+    }
+
     .fl-lightbox {
         padding: 2.75rem 0.4rem 5rem;
     }
