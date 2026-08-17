@@ -19,12 +19,14 @@
 
     var CTA_RULES = [
         { selector: '[data-open-contact]', event: 'contact_cta' },
+        { selector: '[data-hero-collections]', event: 'hero_collections' },
         { selector: '[data-open-showroom]', event: 'showroom_cta' },
         { selector: '[data-open-partners]', event: 'partners_cta' },
         { selector: '[data-doc-video-play]', event: 'video_play' },
         { selector: 'a[href="https://www.youtube.com/@beyondshowrooms"]', event: 'docuseries_link' },
         { selector: '[data-contact="whatsapp"]', event: 'contact_whatsapp' },
-        { selector: '[data-contact="email"]', event: 'contact_email' }
+        { selector: '[data-contact="email"]', event: 'contact_email' },
+        { selector: '[data-showroom-book]', event: 'contact_cta' }
     ];
 
     var pendingEvents = [];
@@ -79,6 +81,26 @@
         }, 100);
     }
 
+    function sendToUmami(name, data) {
+        var payload = data && Object.keys(data).length ? data : undefined;
+
+        // Callback form is the reliable way to attach event data.
+        // umami.track(name, data) recorded the name but left Properties empty.
+        window.umami.track(function (props) {
+            var next = {};
+            for (var key in props) {
+                if (Object.prototype.hasOwnProperty.call(props, key)) {
+                    next[key] = props[key];
+                }
+            }
+            next.name = name;
+            if (payload) {
+                next.data = payload;
+            }
+            return next;
+        });
+    }
+
     function flushPendingEvents() {
         if (!window.umami || typeof window.umami.track !== 'function') {
             return;
@@ -86,13 +108,13 @@
 
         while (pendingEvents.length) {
             var item = pendingEvents.shift();
-            window.umami.track(item.name, item.data);
+            sendToUmami(item.name, item.data);
         }
     }
 
     function trackEvent(name, data) {
         if (window.umami && typeof window.umami.track === 'function') {
-            window.umami.track(name, data);
+            sendToUmami(name, data);
             return;
         }
 
@@ -151,7 +173,7 @@
         return height > viewport + 24;
     }
 
-    function observeSectionOnce(sentinel, sectionName) {
+    function observeSectionOnce(sentinel, eventName) {
         if (!sentinel || typeof IntersectionObserver === 'undefined') {
             return;
         }
@@ -165,10 +187,7 @@
             for (var i = 0; i < entries.length; i += 1) {
                 if (entries[i].isIntersecting) {
                     fired = true;
-                    trackEvent('scroll_section', {
-                        section: sectionName,
-                        page: pagePath()
-                    });
+                    trackEvent(eventName);
                     observer.disconnect();
                     return;
                 }
@@ -254,11 +273,7 @@
             activeObserver = observeScrollBottom({
                 root: root,
                 sentinel: sentinel,
-                eventName: 'scroll_modal_bottom',
-                eventData: {
-                    modal: modalName,
-                    page: pagePath()
-                }
+                eventName: modalName === 'showroom' ? 'scroll_showroom_modal' : 'scroll_partners_modal'
             });
         }
 
@@ -400,10 +415,10 @@
             initYoutubeReferralTracking();
         });
 
-        observeSectionOnce(document.getElementById('collections-title'), 'collections');
-        observeSectionOnce(document.getElementById('trust-title'), 'factories');
-        observeSectionOnce(document.getElementById('homes-title'), 'success_stories');
-        observeSectionOnce(document.querySelector('.founder-credit'), 'bottom');
+        observeSectionOnce(document.getElementById('collections-title'), 'scroll_collections');
+        observeSectionOnce(document.getElementById('trust-title'), 'scroll_factories');
+        observeSectionOnce(document.getElementById('homes-title'), 'scroll_success_stories');
+        observeSectionOnce(document.querySelector('.founder-credit'), 'scroll_bottom');
 
         watchModalScrollBottom('showroomModal', '.lp-showroom-scroll', '.lp-showroom-cta', 'showroom');
         watchModalScrollBottom('partnersModal', '.lp-partners-list', '.lp-partner-card:last-child', 'partners');

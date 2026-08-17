@@ -429,11 +429,13 @@ function initShowroomModal() {
         el.addEventListener('click', closeShowroomModal);
     });
 
-    showroomModal?.querySelector('[data-showroom-book]')?.addEventListener('click', async () => {
-        await closeShowroomModal();
-        if (typeof window.openFounderContact === 'function') {
-            window.openFounderContact();
-        }
+    showroomModal?.querySelectorAll('[data-showroom-book]').forEach((el) => {
+        el.addEventListener('click', async () => {
+            await closeShowroomModal();
+            if (typeof window.openFounderContact === 'function') {
+                window.openFounderContact();
+            }
+        });
     });
 }
 
