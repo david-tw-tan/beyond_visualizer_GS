@@ -164,7 +164,7 @@
         }
 
         .section--closing {
-            padding-bottom: clamp(5.5rem, 14vw, 8.5rem);
+            padding-bottom: clamp(3.5rem, 10vw, 5.5rem);
         }
 
         .container {
@@ -1157,33 +1157,90 @@
             }
         }
 
-        .founder-credit {
-            margin-top: clamp(2.25rem, 5vw, 3rem);
-            padding-top: 1.35rem;
+        .site-footer {
+            padding: clamp(1.85rem, 4.5vw, 2.35rem) clamp(1.25rem, 4vw, 2rem) clamp(2rem, 5vw, 2.5rem);
             border-top: 1px solid var(--color-hairline);
+            background-color: var(--color-surface);
+            background-image:
+                linear-gradient(180deg, var(--color-surface-warm) 0%, var(--color-surface) 55%),
+                radial-gradient(ellipse 80% 100% at 50% 0%, rgba(166, 139, 91, 0.07) 0%, transparent 65%);
+            color: var(--color-ink-muted);
             text-align: center;
-            max-width: 24rem;
-            margin-inline: auto;
         }
 
-        .founder-credit__text {
+        .site-footer__inner {
+            max-width: 24rem;
+            margin: 0 auto;
+        }
+
+        .site-footer__brand {
             margin: 0;
-            font-size: 0.82rem;
-            line-height: 1.6;
+        }
+
+        .site-footer__label {
+            margin: 0 0 0.75rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
             color: var(--color-ink-faint);
         }
 
-        .founder-credit__text a {
-            color: var(--color-ink-muted);
-            font-weight: 500;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(138, 132, 124, 0.35);
-            transition: color var(--transition-fast), border-color var(--transition-fast);
+        .site-footer__logo-link {
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+            transition: opacity var(--transition-fast);
         }
 
-        .founder-credit__text a:hover {
+        .site-footer__logo-link:hover {
+            opacity: 0.78;
+        }
+
+        .site-footer__logo-link:focus-visible {
+            outline: 2px solid var(--color-brass-light);
+            outline-offset: 4px;
+        }
+
+        .site-footer__logo {
+            display: block;
+            height: clamp(1.2rem, 3.2vw, 1.45rem);
+            width: auto;
+            max-width: min(11rem, 68vw);
+            filter: brightness(0);
+            opacity: 0.68;
+        }
+
+        .site-footer__note {
+            margin: 1.1rem auto 0;
+            padding-top: 1rem;
+            max-width: 19rem;
+            border-top: 1px solid var(--color-hairline);
+        }
+
+        .site-footer__note p {
+            margin: 0;
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: var(--color-ink-faint);
+        }
+
+        .site-footer__note p + p {
+            margin-top: 0.4rem;
+        }
+
+        .site-footer__note a {
+            color: var(--color-ink-muted);
+            font-weight: 500;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+            text-decoration-color: rgba(94, 90, 84, 0.35);
+            transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+        }
+
+        .site-footer__note a:hover {
             color: var(--color-brass);
-            border-color: rgba(166, 139, 91, 0.45);
+            text-decoration-color: rgba(166, 139, 91, 0.45);
         }
 
         .watermark {
@@ -1913,55 +1970,55 @@
                         <article class="lp-case-carousel__caption" data-case-caption>
                             <h3 class="lp-case-carousel__title">Grand living under crystal light</h3>
                             <p class="lp-case-carousel__desc">
-                                Minotti-inspired modular sectional from export-grade factories &mdash; plush upholstery across a full living footprint.
+                                Minotti-inspired plush modular sectional under tiered crystal light &mdash; warm neutrals with teal and burnt-orange accents across a full living footprint.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Editorial penthouse living</h3>
                             <p class="lp-case-carousel__desc">
-                                Minotti-inspired curved modular from partner factories &mdash; bold textiles and one cohesive main-level scheme.
+                                Minotti-inspired curved modular sofa with bold textiles in an open penthouse living room.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Sun-drenched organic modern</h3>
                             <p class="lp-case-carousel__desc">
-                                RH Cloud&ndash;inspired sectional from partner factories &mdash; sink-in comfort in soft organic neutrals.
+                                RH Cloud&ndash;inspired sink-in sectional in soft organic neutrals, flooded with natural light.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Sculpture and serenity</h3>
                             <p class="lp-case-carousel__desc">
-                                B&amp;B Italia&ndash;inspired Camaleonda seating from manufacturers I work with &mdash; iconic tufted modularity throughout.
+                                B&amp;B Italia&ndash;inspired Camaleonda tufted modular seating in a calm, sculptural living arrangement.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Dining as a statement</h3>
                             <p class="lp-case-carousel__desc">
-                                Poliform-inspired dining chairs from partner factories &mdash; black marble dining with a leather modular sectional beyond.
+                                Poliform-inspired upholstered dining chairs at a black marble table &mdash; leather sectional visible beyond.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Quiet texture, deep rest</h3>
                             <p class="lp-case-carousel__desc">
-                                B&amp;B Italia&ndash;inspired Camaleonda bed from export-grade factories &mdash; sculptural boucl&eacute; and layered linens for the primary suite.
+                                B&amp;B Italia&ndash;inspired Camaleonda boucl&eacute; bed with layered linens in a quiet primary suite.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Layered neutrals, open-plan calm</h3>
                             <p class="lp-case-carousel__desc">
-                                Low-profile modular sectional from partner factories &mdash; coordinated neutrals across an open-plan living space.
+                                Low-profile modular sectional in coordinated neutrals across an open-plan living space.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">Classic bones, modern ease</h3>
                             <p class="lp-case-carousel__desc">
-                                Curved modular sectional from manufacturers who finish at designer level &mdash; boucl&eacute; upholstery in a heritage interior.
+                                Minotti-inspired boucl&eacute; curved sectional in a heritage interior with classic architectural details.
                             </p>
                         </article>
                         <article class="lp-case-carousel__caption" data-case-caption hidden>
                             <h3 class="lp-case-carousel__title">A sanctuary primary suite</h3>
                             <p class="lp-case-carousel__desc">
-                                Tufted daybed and leather headboard from partner factories &mdash; a primary suite designed for quiet retreat.
+                                Minotti-inspired tufted daybed and leather headboard in a serene primary retreat.
                             </p>
                         </article>
                     </div>
@@ -2014,14 +2071,42 @@
                     <button type="button" class="btn" data-open-contact>CONTACT ME, tell me what you need</button>
                 </div>
             </div>
-
-            <div class="founder-credit reveal">
-                <p class="founder-credit__text">Beyond Showrooms is affiliated with <a href="https://www.wildchina.com" target="_blank" rel="noopener noreferrer">WildChina</a> &mdash; trusted access in China since 2001.</p>
-            </div>
         </div>
     </section>
 
 </main>
+
+<footer class="site-footer">
+    <div class="site-footer__inner">
+        <div class="site-footer__brand">
+            <p class="site-footer__label">From the team behind</p>
+            <a
+                class="site-footer__logo-link"
+                href="https://www.wildchina.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WildChina (opens in new tab)"
+            >
+                <img
+                    class="site-footer__logo"
+                    src="images/wildchina_logo.svg"
+                    alt=""
+                    width="1030"
+                    height="115"
+                    loading="lazy"
+                    decoding="async"
+                >
+            </a>
+        </div>
+        <div class="site-footer__note">
+            <p>Bespoke travel in China since 2001.</p>
+            <p>Visiting Foshan? WildChina handles travel and logistics.</p>
+            <p>
+                <a href="https://wildchina.com/tour/foshan-guangdong-designer-furniture/" target="_blank" rel="noopener noreferrer">View itinerary here.</a>
+            </p>
+        </div>
+    </div>
+</footer>
 
 <!-- Factory partners modal -->
 <div id="partnersModal" class="lp-modal lp-modal--partners" hidden>

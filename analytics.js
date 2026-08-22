@@ -418,7 +418,7 @@
         observeSectionOnce(document.getElementById('collections-title'), 'scroll_collections');
         observeSectionOnce(document.getElementById('trust-title'), 'scroll_factories');
         observeSectionOnce(document.getElementById('homes-title'), 'scroll_success_stories');
-        observeSectionOnce(document.querySelector('.founder-credit'), 'scroll_bottom');
+        observeSectionOnce(document.querySelector('.site-footer'), 'scroll_bottom');
 
         watchModalScrollBottom('showroomModal', '.lp-showroom-scroll', '.lp-showroom-cta', 'showroom');
         watchModalScrollBottom('partnersModal', '.lp-partners-list', '.lp-partner-card:last-child', 'partners');
