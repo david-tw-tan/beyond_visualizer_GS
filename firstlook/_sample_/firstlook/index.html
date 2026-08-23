@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Private First Look — Beyond Showrooms">
+    <title>First Look | Beyond Showrooms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<main class="fl-page">
+
+    <!--
+      ═══════════════════════════════════════════════════════════
+      HEADER — personalize via intro greeting + <title> / meta
+      ═══════════════════════════════════════════════════════════
+    -->
+    <header class="fl-header">
+        <p class="fl-header__brand">Beyond Showrooms</p>
+        <h1 class="fl-header__title">First Look</h1>
+        <p class="fl-header__subtitle">Your Curated Direction</p>
+        <!-- ▼ Update this date whenever you send or revise the proposal -->
+        <p class="fl-header__date">10 August 2026</p>
+        <!--
+          ═══════════════════════════════════════════════════════════
+          VERSIONS — keep ONE pattern active; comment out the rest.
+          1 look  → omit this block entirely
+          2 looks → inline switcher (default below)
+          3+ looks → compact menu (details/summary)
+          ═══════════════════════════════════════════════════════════
+        -->
+
+        <!-- 1 look only: delete / comment out the entire versions block -->
+
+        <!-- 2 looks: inline switcher -->
+        <nav class="fl-versions" aria-label="Document versions">
+            <a class="fl-versions__link is-current" href="./" aria-current="page">First Look</a>
+            <span class="fl-versions__sep" aria-hidden="true">·</span>
+            <a class="fl-versions__link" href="../firstquote/index.html">First Quote</a>
+        </nav>
+        <hr class="fl-header__rule">
+    </header>
+
+    <!-- ▼ Edit client name in the greeting below -->
+    <p class="fl-intro">
+        <strong>Hi aspiring home designer!</strong> — here's your First Look, based on your brief: Hermès-like, and not flashy. Note what catches your eye and what doesn't — we'll use your feedback to refine the direction as we build out your room collection.
+    </p>
+
+    <!-- Sticky room jump links (built from FIRST_LOOK_CONFIG.rooms) -->
+    <nav id="fl-room-nav" class="fl-room-nav" aria-label="Rooms" hidden></nav>
+
+    <!-- Room galleries (built from FIRST_LOOK_CONFIG) -->
+    <div id="fl-rooms" class="fl-rooms"></div>
+
+    <aside class="fl-sourcing" aria-label="A note on these pieces">
+        <p class="fl-sourcing__label">A note on these pieces</p>
+        <p class="fl-sourcing__body">Furniture pieces are photographed in factory showrooms where possible. Many pieces can be customized — ask us about it.</p>
+    </aside>
+
+    <section class="fl-next" aria-labelledby="fl-next-title">
+        <h2 id="fl-next-title" class="fl-next__title">What Happens Next</h2>
+        <ol class="fl-steps">
+            <li class="fl-step">
+                <h3 class="fl-step__heading">You review this First Look</h3>
+                <p class="fl-step__body">Note what resonates and what doesn't — even a rough reaction is enough to work with. If you have additional references — renderings, wish lists, or inspiration boards — share them with us now. The more targeted the search, the better.</p>
+            </li>
+            <li class="fl-step">
+                <h3 class="fl-step__heading">We build out your room collection</h3>
+                <p class="fl-step__body">Once we're aligned on style, we put together a complete room-by-room selection — customized to your home, budget, and needs.</p>
+            </li>
+            <li class="fl-step">
+                <h3 class="fl-step__heading">We prepare your first quote</h3>
+                <p class="fl-step__body">When a room's direction feels right, we'll put together a first quote with indicative pricing — a preliminary budget check to keep the overall project on track. It's not a final quote; your confirmed shortlist only takes shape once we've worked through the First Quote together.</p>
+            </li>
+        </ol>
+        <div class="fl-contact">
+            <div class="fl-contact__person">
+                <img
+                    class="fl-contact__photo"
+                    src="../../david.jpg"
+                    alt="David — Beyond Showrooms"
+                    width="144"
+                    height="144"
+                    loading="lazy"
+                    decoding="async"
+                >
+                <p class="fl-contact__prompt"><strong>Questions and feedback?</strong></p>
+            </div>
+            <div class="fl-contact__options">
+                <a
+                    class="fl-contact__option"
+                    href="https://wa.me/8618500507027"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <svg class="fl-contact__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                    <span class="fl-contact__text">
+                        <span class="fl-contact__label">WhatsApp</span>
+                        <span class="fl-contact__detail">+86 185 0050 7027</span>
+                    </span>
+                </a>
+                <a
+                    class="fl-contact__option"
+                    href="mailto:david.tan@wildchina.com?subject=First%20Look%20feedback"
+                >
+                    <svg class="fl-contact__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    <span class="fl-contact__text">
+                        <span class="fl-contact__label">Email</span>
+                        <span class="fl-contact__detail">david.tan@wildchina.com</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="fl-about" aria-labelledby="fl-about-title">
+        <h2 id="fl-about-title" class="fl-about__title">About</h2>
+        <p>
+            Beyond Showrooms was started by two people who spent months going deep inside Foshan's designer furniture factories — and came back convinced of a smarter way for international homeowners to furnish their homes.
+        </p>
+        <p>
+            We're affiliated with <a href="https://www.wildchina.com" target="_blank" rel="noopener noreferrer">WildChina</a>, China's leading bespoke travel provider since 2001. That's where our passion for high-touch, end-to-end service comes from.
+        </p>
+        <p>
+            We also made a documentary about all of this — worth a watch. → <a href="https://www.youtube.com/playlist?list=PLem0TGDnDhbR_qDtnVKB2VRIXDtdB-se5" target="_blank" rel="noopener noreferrer">Secret Furniture Empire</a>
+        </p>
+    </section>
+
+    <footer class="fl-footer">
+        <p class="fl-footer__copy">&copy; Beyond Showrooms</p>
+        <p class="fl-footer__site"><a href="https://www.beyondshowrooms.com" target="_blank" rel="noopener noreferrer">www.beyondshowrooms.com</a></p>
+        <p class="fl-footer__privacy">This page is private and intended only for the recipient.</p>
+    </footer>
+
+</main>
+
+<!--
+  ════════════════════════════════════════════════════════════════
+  // SWAP IMAGES HERE
+  This is the only section that needs editing when swapping photos
+  for a client (plus the intro greeting, <title>, and room titles).
+
+  Image files live in THIS folder next to index.html.
+  Current naming in this folder: living_room_1.jpg, dining_room_1.jpg, …
+
+  After dropping new photos, run:  python3 resize_images.py
+
+  Caption format: [Material] — [one distinguishing detail]
+  Never use the word "replica". Prefer "designer-inspired".
+  ════════════════════════════════════════════════════════════════
+-->
+<script>
+window.FIRST_LOOK_CONFIG = {
+    rooms: [
+        {
+            id: 'living-room',
+            title: 'Living Room',
+            images: [
+                { src: 'living_room_1.jpg', caption: 'Woven cognac leather — cream modular seating.', alt: 'Living room with woven cognac leather sofa and cream modular seating' },
+                { src: 'living_room_2.jpg', caption: 'Cream modular seating — woven leather, mustard chair.', alt: 'Living room with cream modular sofa and mustard accent chair' },
+                { src: 'living_room_4.jpg', caption: 'Tan leather sofa — cream ottoman, quiet lines.', alt: 'Tan leather sofa with cream ottoman' },
+                { src: 'living_room_5.jpg', caption: 'Cream modular seating — mirrored coffee table.', alt: 'Cream modular living set with mirrored coffee table' },
+                { src: 'living_room_6.jpg', caption: 'Cream-and-brown sectional — round wood table.', alt: 'Cream and brown sectional with round wood coffee table' },
+                { src: 'living_room_7.jpg', caption: 'Off-white modular sofa — brass-frame tables.', alt: 'Off-white modular sofa with brass-framed coffee tables' },
+                { src: 'living_room_8.jpg', caption: 'Wood and green cabinets — slim metal frame.', alt: 'Modular wood and green cabinet unit' },
+                { src: 'living_room_9.jpg', caption: 'Honey fabric ottoman — leather trim, metal base.', alt: 'Honey fabric ottoman with leather trim' },
+                { src: 'living_room_10.jpg', caption: 'Cognac tufted lounge — soft modular seat.', alt: 'Cognac tufted modular lounge chair' },
+                { src: 'living_room_11.jpg', caption: 'Black leather chaise — fluid sculptural form.', alt: 'Black leather chaise lounge' },
+                { src: 'living_room_12.jpg', caption: 'Cognac leather armchair — pleated back.', alt: 'Cognac leather armchair with pleated back' },
+                { src: 'living_room_13.jpg', caption: 'Cognac leather chair — cylinder arms, V-legs.', alt: 'Cognac leather chair with cylindrical arms' },
+                { src: 'living_room_14.jpg', caption: 'Cowhide chaise — chrome tubular frame.', alt: 'Cowhide chaise longue with chrome frame' },
+                { src: 'living_room_15.jpg', caption: 'Black leather lounge — walnut shell classic.', alt: 'Black leather lounge chair with walnut shell' },
+                { src: 'living_room_16.jpg', caption: 'Terracotta lounge — quilted seat, dark wood.', alt: 'Terracotta quilted lounge chair with dark wood frame' }
+            ]
+        },
+        {
+            id: 'dining-room',
+            title: 'Dining Room',
+            images: [
+                { src: 'dining_room_1.jpg', caption: 'Black stone table — taupe leather chairs.', alt: 'Black stone dining table with taupe leather chairs' },
+                { src: 'dining_room_2.jpg', caption: 'Wood dining table — ribbed legs, mixed chairs.', alt: 'Wood dining table with mixed contemporary chairs' },
+                { src: 'dining_room_3.jpg', caption: 'Chevron wood table — cane and bouclé chairs.', alt: 'Chevron wood dining table with cane and bouclé chairs' },
+                { src: 'dining_room_4.jpg', caption: 'Burgundy leather chair — seamless sculpted form.', alt: 'Burgundy leather dining chair' },
+                { src: 'dining_room_5.jpg', caption: 'Plywood seat, black steel — mid-century lines.', alt: 'Plywood and black steel dining chair' }
+            ]
+        },
+        {
+            id: 'bedroom',
+            title: 'Bedroom',
+            images: [
+                { src: 'bedroom_1.jpg', caption: 'Taupe leather headboard — wood frame suite.', alt: 'Bedroom with taupe leather headboard' },
+                { src: 'bedroom_2.jpg', caption: 'Beige fabric bed — wide headboard, soft neutrals.', alt: 'Beige upholstered bed with wide headboard' },
+                { src: 'bedroom_3.jpg', caption: 'Terracotta leather bed — cream nightstands.', alt: 'Terracotta leather bed with cream nightstands' },
+                { src: 'bedroom_4.jpg', caption: 'Black leather headboard — caramel quilted bench.', alt: 'Black leather headboard with caramel quilted bench' },
+                { src: 'bedroom_5.jpg', caption: 'Cognac leather bed — channel-stitched headboard.', alt: 'Cognac leather bed with channel stitching' },
+                { src: 'bedroom_6.jpg', caption: 'Beige nightstand — green marble lamp.', alt: 'Beige nightstand with green marble lamp' },
+                { src: 'bedroom_7.jpg', caption: 'Wood nightstand — leather pull, warm lamp.', alt: 'Wood nightstand with leather pull and warm lamp' },
+                { src: 'bedroom_8.jpg', caption: 'Dark wood nightstand — stacked round drawers.', alt: 'Dark wood stacked round nightstand' }
+            ]
+        },
+        {
+            id: 'study',
+            title: 'Study',
+            images: [
+                { src: 'study_1.jpg', caption: 'Cognac leather desk — wood legs, clean set.', alt: 'Cognac leather desk with wood legs' },
+                { src: 'study_2.jpg', caption: 'Kidney leather desk — matching cognac chairs.', alt: 'Kidney-shaped leather desk with cognac chairs' },
+                { src: 'study_3.jpg', caption: 'Black wood desk — orange leather chair.', alt: 'Black wood desk with orange leather chair' }
+            ]
+        }
+    ]
+};
+</script>
+<script src="../../lightbox.js"></script>
+</body>
+</html>
