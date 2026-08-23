@@ -125,6 +125,26 @@ button {
     transition: color 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Inline 2-tab switcher: both tabs read as pills (filled active, outlined inactive) */
+.fl-versions:not(.fl-versions--menu) .fl-versions__link:not(.is-current) {
+    border-color: #c4bbb0;
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.fl-versions:not(.fl-versions--menu) .fl-versions__link:not(.is-current):hover {
+    color: #1a1a18;
+    border-color: #8a847c;
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+.fl-versions:not(.fl-versions--menu) .fl-versions__sep {
+    display: none;
+}
+
+.fl-versions:not(.fl-versions--menu) {
+    gap: 0.4rem;
+}
+
 .fl-versions__link:hover {
     color: #1a1a18;
 }
@@ -1027,7 +1047,13 @@ button {
 /* ─── Rough quote list ─── */
 
 .fl-quote {
-    margin-bottom: 2.75rem;
+    max-width: 42rem;
+    width: 100%;
+    margin: 0 auto 2.75rem;
+}
+
+.fl-quote .fl-room__intro {
+    max-width: none;
 }
 
 .fl-quote__title {
